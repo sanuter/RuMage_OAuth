@@ -84,7 +84,6 @@ shell/compiler.php
 shell/indexer.php
 shell/log.php
 skin/adminhtml/default/default/
-skin/frontend/base/
 skin/frontend/default/blank/
 skin/frontend/default/blue/
 skin/frontend/default/default/
