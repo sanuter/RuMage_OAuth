@@ -1,0 +1,619 @@
+<?xml version="1.0"?>
+
+<config>
+    <sections>
+        <ruoauth translate="label" module="ruoauth">
+            <label>OAuth Service (RuMage)</label>
+            <tab>customer</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>990</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <setting translate="label" module="ruoauth">
+                    <label>Main Setting</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>2</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active>
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>ruoauth/active</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use Extension (Yes/No)</comment>
+                        </active>
+                        <subcribe>
+                            <label>Subscribe</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>ruoauth/subscribe</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </subcribe>
+                    </fields>
+                </setting>
+                <vk translate="label" module="ruoauth">
+                    <label>Setting service VK.com</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>2</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label comment" module="ruoauth">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>ruoauth/vk/active</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use (Yes/No)</comment>
+                        </active>
+                        <application_id translate="label comment" module="ruoauth">
+                            <label>Application ID</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Application ID</comment>
+                            <validate>required-entry validate-number</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </application_id>
+                        <application_secret translate="label comment" module="ruoauth">
+                            <label>Application Secret</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Application Secret word for API</comment>
+                            <validate>required-entry validate-alphanum</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </application_secret>
+                        <!--scope translate="label comment" module="ruoauth">
+                            <label>Scope</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Get info from REST API VK.com</comment>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </scope-->
+                        <popup_width translate="label comment" module="ruoauth">
+                            <label>Popup width</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-number validate-zero-or-greater required-entry</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </popup_width>
+                        <popup_height translate="label comment" module="ruoauth">
+                            <label>Popup height</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>6</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-number validate-zero-or-greater required-entry</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </popup_height>
+                        <!--debug translate="label comment" module="ruoauth">
+                            <label>Debug</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>ruoauth/vk/debug</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>7</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Debug service (Yes/No)</comment>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </debug-->
+                    </fields>
+                </vk>
+                <mailru translate="label" module="ruoauth">
+                    <label>Setting service Mail.ru</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>3</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label comment" module="ruoauth">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>ruoauth/mailru/active</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use (Yes/No)</comment>
+                        </active>
+                        <application_id translate="label comment" module="ruoauth">
+                            <label>Application ID</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Application ID</comment>
+                            <validate>required-entry validate-number</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </application_id>
+                        <application_secret translate="label comment" module="ruoauth">
+                            <label>Application Secret</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Application Secret word for API</comment>
+                            <validate>required-entry validate-alphanum</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </application_secret>
+                        <popup_width translate="label comment" module="ruoauth">
+                            <label>Popup width</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-number validate-zero-or-greater required-entry</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </popup_width>
+                        <popup_height translate="label comment" module="ruoauth">
+                            <label>Popup height</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>6</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-number validate-zero-or-greater required-entry</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </popup_height>
+                        <!--debug translate="label comment" module="ruoauth">
+                            <label>Debug</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>ruoauth/mailru/debug</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>7</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Debug service (Yes/No)</comment>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </debug-->
+                    </fields>
+                </mailru>
+                <ya translate="label" module="ruoauth">
+                    <label>Setting service YA.ru</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>4</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label comment" module="ruoauth">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>ruoauth/ya/active</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use (Yes/No)</comment>
+                        </active>
+                        <!--application_id translate="label comment" module="ruoauth">
+                            <label>Application ID</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Application ID</comment>
+                            <validate>required-entry validate-alphanum</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </application_id>
+                        <application_secret translate="label comment" module="ruoauth">
+                            <label>Application Secret</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Application Secret word for API</comment>
+                            <validate>required-entry validate-alphanum</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </application_secret-->
+                        <popup_width translate="label comment" module="ruoauth">
+                            <label>Popup width</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-number validate-zero-or-greater required-entry</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </popup_width>
+                        <popup_height translate="label comment" module="ruoauth">
+                            <label>Popup height</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>6</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-number validate-zero-or-greater required-entry</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </popup_height>
+                        <!--debug translate="label comment" module="ruoauth">
+                            <label>Debug</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>ruoauth/ya/debug</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>7</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Debug service (Yes/No)</comment>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </debug-->
+                    </fields>
+                </ya>
+                <odnoklassniki translate="label" module="ruoauth">
+                    <label>Setting service Odnoklassniki.ru</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>4</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label comment" module="ruoauth">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>ruoauth/odnoklassniki/active</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use (Yes/No)</comment>
+                        </active>
+                        <application_id translate="label comment" module="ruoauth">
+                            <label>Application ID</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Application ID</comment>
+                            <validate>required-entry validate-number</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </application_id>
+                        <application_secret translate="label comment" module="ruoauth">
+                            <label>Application Secret</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Application Secret word for API</comment>
+                            <validate>required-entry validate-alphanum</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </application_secret>
+                        <application_public translate="label comment" module="ruoauth">
+                            <label>Application Public</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Application Public</comment>
+                            <validate>required-entry validate-alphanum</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </application_public>
+                        <!--scope translate="label comment" module="ruoauth">
+                            <label>Scope</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Get info from REST API Odnoklassniki.ru</comment>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </scope-->
+                        <popup_width translate="label comment" module="ruoauth">
+                            <label>Popup width</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-number validate-zero-or-greater required-entry</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </popup_width>
+                        <popup_height translate="label comment" module="ruoauth">
+                            <label>Popup height</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>6</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-number validate-zero-or-greater required-entry</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </popup_height>
+                        <!--debug translate="label comment" module="ruoauth">
+                            <label>Debug</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>ruoauth/odnoklassniki/debug</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>7</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Debug service (Yes/No)</comment>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </debug-->
+                    </fields>
+                </odnoklassniki>
+                <facebook translate="label" module="ruoauth">
+                    <label>Setting service Facebook.com</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>5</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label comment" module="ruoauth">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>ruoauth/facebook/active</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use (Yes/No)</comment>
+                        </active>
+                        <application_id translate="label comment" module="ruoauth">
+                            <label>Application ID</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Application ID</comment>
+                            <validate>required-entry validate-number</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </application_id>
+                        <application_secret translate="label comment" module="ruoauth">
+                            <label>Application Secret</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Application Secret word for API</comment>
+                            <validate>required-entry validate-alphanum</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </application_secret>
+                        <!--scope translate="label comment" module="ruoauth">
+                            <label>Scope</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Get info from REST API Facebook.com</comment>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </scope-->
+                        <popup_width translate="label comment" module="ruoauth">
+                            <label>Popup width</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-number validate-zero-or-greater required-entry</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </popup_width>
+                        <popup_height translate="label comment" module="ruoauth">
+                            <label>Popup height</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>6</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-number validate-zero-or-greater required-entry</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </popup_height>
+                        <!--debug translate="label comment" module="ruoauth">
+                            <label>Debug</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>ruoauth/facebook/debug</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>7</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Debug service (Yes/No)</comment>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </debug-->
+                    </fields>
+                </facebook>
+                <google translate="label" module="ruoauth">
+                    <label>Setting service Google.com</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>6</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label comment" module="ruoauth">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>ruoauth/google/active</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use (Yes/No)</comment>
+                        </active>
+                        <application_id translate="label comment" module="ruoauth">
+                            <label>Application ID</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Application ID</comment>
+                            <validate>required-entry validate-number</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </application_id>
+                        <application_secret translate="label comment" module="ruoauth">
+                            <label>Application Secret</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Application Secret word for API</comment>
+                            <validate>required-entry validate-alphanum</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </application_secret>
+                        <!--scope translate="label comment" module="ruoauth">
+                            <label>Scope</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Get info from REST API Google.com</comment>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </scope-->
+                        <popup_width translate="label comment" module="ruoauth">
+                            <label>Popup width</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-number validate-zero-or-greater required-entry</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </popup_width>
+                        <popup_height translate="label comment" module="ruoauth">
+                            <label>Popup height</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>6</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-number validate-zero-or-greater required-entry</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </popup_height>
+                        <!--debug translate="label comment" module="ruoauth">
+                            <label>Debug</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>ruoauth/google/debug</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>7</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Debug service (Yes/No)</comment>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </debug-->
+                    </fields>
+                </google>
+            </groups>
+        </ruoauth>
+    </sections>
+</config>

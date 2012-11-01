@@ -1,0 +1,141 @@
+<?php
+
+class RuMage_OAuth_Helper_Data extends Mage_Core_Helper_Abstract
+{
+    /**
+     * Return all services.
+     * @return array
+     */
+    public function getServices()
+    {
+        $services = array();
+        $config = Mage::getStoreConfig('ruoauth');
+
+        if (is_array($config) AND $config['active']) {
+            foreach ($config as $service=>$serviceConfig) {
+                if (is_array($serviceConfig)) {
+                    if ($config[$service]['active']) {
+                        $services[$service] = $serviceConfig;
+                    }
+                }
+            }
+        }
+
+        return $services;
+    }
+
+    /**
+     * Get email or generate email for customer.
+     * @param $provider
+     * @return string
+     */
+    public function getServiceEmail($provider)
+    {
+        $provider->getAttributes();
+
+        if ($provider->getEmail()) {
+            return $provider->getEmail();
+        }
+
+        //TODO need this
+        return $provider->getId() . '@' . strtolower($provider->getServiceName());
+    }
+
+    /**
+     * Generate redirect link for current service.
+     * @return string
+     */
+    public function getReturnUrl()
+    {
+        $request = Mage::app()->getRequest();
+        return Mage::getUrl('ruoauth/provider', array('service' => $request->getParam('service')));
+    }
+
+    /**
+     * Generate cancel link for current service.
+     * @return string
+     */
+    public function getCancelUrl()
+    {
+        $request = Mage::app()->getRequest();
+        return Mage::getUrl('ruoauth/provider/cancel', array('service' => $request->getParam('service')));
+    }
+
+    /**
+     * Check valid email.
+     * @param $customer
+     * @return bool
+     */
+    public function checkEmail($customer)
+    {
+        $services = $this->getServices();
+        foreach ($services as $alias => $config) {
+            if (substr_count($customer->getEmail(), $alias)) {
+                return TRUE;
+            }
+        }
+
+        return FALSE;
+    }
+
+    /**
+     * Return application ID.
+     * @param RuMage_OAuth_Model_Base $type
+     * @return mixed
+     */
+    public function getClientId(RuMage_OAuth_Model_Base $type)
+    {
+        return Mage::getStoreConfig('ruoauth/' . $type->getServiceName() . '/application_id');
+    }
+
+    /**
+     * Return application secret key.
+     * @param RuMage_OAuth_Model_Base $type
+     * @return mixed
+     */
+    public function getClientSecret(RuMage_OAuth_Model_Base $type)
+    {
+        return Mage::getStoreConfig('ruoauth/' . $type->getServiceName() . '/application_secret');
+    }
+
+    /**
+     * Return application public key.
+     * @param RuMage_OAuth_Model_Base $type
+     * @return mixed
+     */
+    public function getClientPublic(RuMage_OAuth_Model_Base $type)
+    {
+        return Mage::getStoreConfig('ruoauth/' . $type->getServiceName() . '/application_public');
+    }
+
+    /**
+     * Return width for popup.
+     * @param $type
+     * @return mixed
+     */
+    public function getWidth($type)
+    {
+        $config = Mage::getStoreConfig('ruoauth');
+        return $config[$type]['popup_width'];
+    }
+
+    /**
+     * Return height for popup.
+     * @param $type
+     * @return mixed
+     */
+    public function getHeight($type)
+    {
+        $config = Mage::getStoreConfig('ruoauth');
+        return $config[$type]['popup_height'];
+    }
+
+    /**
+     * Current session.
+     * @return Mage_Customer_Model_Session
+     */
+    public function getSession()
+    {
+        return Mage::getSingleton('customer/session');
+    }
+}

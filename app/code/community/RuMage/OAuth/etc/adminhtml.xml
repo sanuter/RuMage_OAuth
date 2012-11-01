@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+
+-->
+<config>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <ruoauth translate="title" module="ruoauth">
+                                        <title>OAuth Service Section</title>
+                                    </ruoauth>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

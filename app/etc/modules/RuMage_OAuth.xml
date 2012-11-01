@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<config>
+    <modules>
+        <RuMage_OAuth>
+            <active>true</active>
+            <codePool>community</codePool>
+            <depends>
+                <Mage_Customer />
+                <Mage_Adminhtml />
+                <RuMage_All />
+            </depends>
+        </RuMage_OAuth>
+    </modules>
+</config>

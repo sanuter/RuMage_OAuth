@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<config>
+    <modules>
+        <RuMage_All>
+            <active>true</active>
+            <codePool>community</codePool>
+            <version>1.0</version>
+        </RuMage_All>
+    </modules>
+</config>
