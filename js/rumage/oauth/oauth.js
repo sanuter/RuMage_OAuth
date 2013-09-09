@@ -1,3 +1,7 @@
+/**
+###lit###
+ */
+
 (function($) {
     var popup;
 

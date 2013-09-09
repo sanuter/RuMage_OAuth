@@ -1,7 +1,8 @@
 <?php
+###lit###
 
 abstract class RuMage_OAuth_Model_Base
-    extends Varien_Object
+    extends Varien_Object implements RuMage_OAuth_Interface
 {
     /**
      * Returns service name(id).
@@ -31,6 +32,51 @@ abstract class RuMage_OAuth_Model_Base
     }
 
     /**
+     * Returns arguments for the jQuery.oauth() javascript function.
+     * @return array the arguments for the jQuery.oauth() javascript function.
+     */
+    public function getJsArguments()
+    {
+        return $this->getJsArguments();
+    }
+
+    /**
+     * Sets redirect url after successful authorization.
+     * @param string url to redirect.
+     */
+    public function setRedirectUrl($url)
+    {
+        $this->setData('redirect_url', $url);
+    }
+
+    /**
+     * Returns the redirect url after successful authorization.
+     * @return string the redirect url after successful authorization.
+     */
+    public function getRedirectUrl()
+    {
+        return $this->getRedirectUrl();
+    }
+
+    /**
+     * Sets redirect url after unsuccessful authorization (e.g. user canceled).
+     * @param string url to redirect.
+     */
+    public function setCancelUrl($url)
+    {
+        $this->setData('cancel_url', $url);
+    }
+
+    /**
+     * Returns the redirect url after unsuccessful authorization (e.g. user canceled).
+     * @return string the redirect url after unsuccessful authorization (e.g. user canceled).
+     */
+    public function getCancelUrl()
+    {
+        return $this->getCancelUrl();
+    }
+
+    /**
      * Authenticate the user.
      * @return boolean whether user was successfuly authenticated.
      */
@@ -49,11 +95,20 @@ abstract class RuMage_OAuth_Model_Base
     }
 
     /**
+     * Redirect to the url. If url is NULL, {@link redirectUrl} will be used.
+     * @param string $url url to redirect.
+     */
+    public function redirect($url = NULL)
+    {
+        Mage::app()->getResponse()->setRedirect(isset($url) ? $url : $this->getRedirectUrl(), TRUE);
+    }
+
+    /**
      * Redirect to the {@link cancelUrl} or simply close the popup window.
      */
     public function cancel($url = NULL)
     {
-        Mage::app()->getResponse()->setRedirect(isset($url) ? $url : $this->getData('cancel_url'));
+        Mage::app()->getResponse()->setRedirect(isset($url) ? $url : $this->getCancelUrl(), TRUE);
     }
 
     /**
@@ -65,23 +120,27 @@ abstract class RuMage_OAuth_Model_Base
     protected function makeRequest($url, $options = array(), $parseJson = TRUE)
     {
         $ch = $this->initRequest($url, $options);
+
         $result = curl_exec($ch);
+
         $headers = curl_getinfo($ch);
 
         if (curl_errno($ch) > 0) {
-            Mage::helper('ruoauth')->getSession()->addError(
-                Mage::helper('ruoauth')->__(curl_error($ch))
-            );
-            $this->cancel();
-            return FALSE;
+            throw new RuMage_OAuth_Exception(curl_error($ch), curl_errno($ch));
         }
 
         if ($headers['http_code'] != 200) {
-            Mage::helper('ruoauth')->getSession()->addError(
-                Mage::helper('ruoauth')->__('Invalid response http code: ' . $headers['http_code'])
+            Mage::log(
+                'Invalid response http code: ' . $headers['http_code'] . '.' . PHP_EOL .
+                'URL: ' . $url . PHP_EOL .
+                'Options: ' . var_export($options, TRUE) . PHP_EOL .
+                'Result: ' . $result,
+                Zend_Log::ERR, 'rumage.oauth.log'
             );
-            $this->cancel();
-            return FALSE;
+            throw new RuMage_OAuth_Exception(
+                'Invalid response http code: ' . $headers['http_code'] . '.',
+                $headers['http_code']
+            );
         }
 
         curl_close($ch);
@@ -154,27 +213,74 @@ abstract class RuMage_OAuth_Model_Base
             $result = json_decode($response);
             $error = $this->fetchJsonError($result);
             if (!isset($result)) {
-                Mage::helper('ruoauth')->getSession()->addError(
-                    Mage::helper('ruoauth')->__('Invalid response format.')
-                );
-                $this->cancel();
-                return FALSE;
+                throw new RuMage_OAuth_Exception('Invalid response format.');
             } else if (isset($error)) {
-                Mage::helper('ruoauth')->getSession()->addError(
-                    Mage::helper('ruoauth')->__($error['message'] . '-' . $error['code'])
-                );
-                $this->cancel();
-                return FALSE;
+                throw new RuMage_OAuth_Exception($error['message'], $error['code']);
             } else {
                 return $result;
             }
         } catch (Exception $e) {
-            Mage::helper('ruoauth')->getSession()->addException(
-                $e, $e->getMessage()
-            );
-            $this->cancel();
-            return FALSE;
+            throw new RuMage_OAuth_Exception($e->getMessage(), $e->getCode());
         }
+    }
+
+    /**
+     * @return string a prefix for the name of the session variables storing oauth session data.
+     */
+    protected function getStateKeyPrefix() {
+        return '__oauth_' . $this->getServiceName() . '__' ;
+    }
+
+    /**
+     * Stores a variable in oauth session.
+     * @param string $key variable name.
+     * @param mixed $value variable value.
+     * @param mixed $defaultValue default value. If $value===$defaultValue, the variable will be
+     * removed from the session.
+     * @see getState
+     */
+    protected function setState($key, $value, $defaultValue = NULL)
+    {
+        /* @var $session Mage_Customer_Model_Session */
+        $session = Mage::getSingleton('customer/session');
+
+        $key = $this->getStateKeyPrefix() . $key;
+        if ($value === $defaultValue) {
+            $session->unsetData($key);
+        } else {
+            $session->setData($key, $value);
+        }
+    }
+
+    /**
+     * Returns a value indicating whether there is a state of the specified name.
+     * @param string $key state name.
+     * @return boolean whether there is a state of the specified name.
+     */
+    protected function hasState($key)
+    {
+        /* @var $session Mage_Customer_Model_Session */
+        $session = Mage::getSingleton('customer/session');
+
+        $key = $this->getStateKeyPrefix() . $key;
+        return $session->hasData($key);
+    }
+
+    /**
+     * Returns the value of a variable that is stored in oauth session.
+     * @param string $key variable name.
+     * @param mixed $defaultValue default value.
+     * @return mixed the value of the variable. If it doesn't exist in the session,
+     * the provided default value will be returned.
+     * @see setState
+     */
+    protected function getState($key, $defaultValue = NULL)
+    {
+        /* @var $session Mage_Customer_Model_Session */
+        $session = Mage::getSingleton('customer/session');
+
+        $key = $this->getStateKeyPrefix() . $key;
+        return $session->getData($key, $defaultValue);
     }
 
     /**
@@ -207,15 +313,12 @@ abstract class RuMage_OAuth_Model_Base
      * Fetch attributes array.
      * This function is internally used to handle fetched state.
      */
-    protected function _fetchAttributes($answer = array())
+    protected function _fetchAttributes()
     {
-        foreach ($this->_attributesMapKeys as $param => $key) {
-            if (array_key_exists($key, $answer)) {
-                $this->setData($param, $answer[$key]);
-            }
+        $result = $this->fetchAttributes();
+        if (isset($result)) {
+            $this->setData($result);
         }
-
-        $this->setData('fullname', $this->getFirstname() . ' ' . $this->getLastname());
     }
 
     /**
@@ -228,19 +331,11 @@ abstract class RuMage_OAuth_Model_Base
         return $this->getUid();
     }
 
-    /**
-     * Return attributes current user.
-     */
     public function getAttributes()
     {
         $this->fetchAttributes();
     }
 
-    /**
-     * Return value attribute.
-     * @param $key
-     * @return mixed
-     */
     public function getAttribute($key)
     {
         $this->_fetchAttributes();

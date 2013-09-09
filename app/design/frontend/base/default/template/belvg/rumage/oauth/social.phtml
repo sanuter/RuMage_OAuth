@@ -1,0 +1,32 @@
+<?php
+###lit###
+?>
+<?php if(!$this->isCustomerLogin()): ?>
+    <?php
+    /* @var $this RuMage_OAuth_Block_Services */
+    $services = $this->getServices();
+    ?>
+    <div class="services">
+        <ul class="auth-services clear">
+            <?php foreach($services as $alias => $config): ?>
+                <li class="auth-service <?php echo $alias ?>">
+                    <a href="<?php echo $this->getProviderUrl($alias) ?>" class="auth-link <?php echo $alias ?>">
+                        <span class="auth-icon <?php echo $alias ?>"><i></i></span>
+                    </a>
+                    <script type="text/javascript">
+                        $ruoauth('.auth-service.<?php echo $alias ?> a').eauth(<?php echo json_encode($this->getProviderJsOptions($alias)) ?>);
+                    </script>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+
+    <?php if($this->getAuthenticate()): ?>
+    <script type="text/javascript">
+        if (window.location != window.parent.location)
+            window.parent.location.reload();
+        else
+            window.location = "<?php echo Mage::getUrl(); ?>";
+    </script>
+    <?php endif; ?>
+<?php endif; ?>

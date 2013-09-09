@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-
+<!--
+###lit###
+-->
 <config>
     <modules>
         <RuMage_OAuth>
@@ -99,26 +101,39 @@
     <default>
         <ruoauth>
             <vk>
+                <application_id>3109958</application_id>
+                <application_secret>oJ5ZNvoBAQCgmnpm1Ogm</application_secret>
                 <popup_width>585</popup_width>
                 <popup_height>359</popup_height>
             </vk>
             <ya>
+                <application_id>4c9faddbed2c473ababa9da6d1042dd7</application_id>
+                <application_secret>c9a9a1d53ce94365bd51715a6e31d479</application_secret>
                 <popup_width>900</popup_width>
                 <popup_height>550</popup_height>
             </ya>
             <mailru>
+                <application_id>689450</application_id>
+                <application_secret>8d4c9017ec5f6db002f68f105e7ff39f</application_secret>
                 <popup_width>580</popup_width>
                 <popup_height>400</popup_height>
             </mailru>
             <odnoklassniki>
+                <application_id>93208320</application_id>
+                <application_secret>CBAQDPIGABABABABA</application_secret>
+                <application_public>643AD5B1F52D4B61AE122353</application_public>
                 <popup_width>680</popup_width>
                 <popup_height>500</popup_height>
             </odnoklassniki>
             <facebook>
+                <application_id>288900254545514</application_id>
+                <application_secret>52c18ad719263616a3c25a6d2ad6b1c8</application_secret>
                 <popup_width>585</popup_width>
                 <popup_height>290</popup_height>
             </facebook>
             <google>
+                <application_id>253195433795</application_id>
+                <application_secret>2UW2I7Ov1soY6Pz81c301wR6</application_secret>
                 <popup_width>500</popup_width>
                 <popup_height>450</popup_height>
             </google>

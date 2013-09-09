@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!--
+###lit###
+-->
+<layout version="0.1.0">
+
+    <default>
+        <reference name="head">
+            <!-- //TODO add ifconfig -->
+            <action method="addCss"><stylesheet>css/rumage/oauth/oauth.css</stylesheet></action>
+            <action method="addJs"><script>rumage/jquery-1.7.2.min.js</script></action>
+            <action method="addJs"><script>rumage/oauth/init.js</script></action>
+            <action method="addJs"><script>rumage/oauth/oauth.js</script></action>
+        </reference>
+
+        <reference name="top.menu">
+            <block type="ruoauth/services" name="login.social" as="login_social" template="belvg/rumage/oauth/social.phtml" before="catalog.topnav"/>
+        </reference>
+    </default>
+
+    <ruoauth_provider_addition>
+        <reference name="root">
+            <action method="setTemplate"><template>page/1column.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <block type="ruoauth/addition" name="ruoauth.addition" template="belvg/rumage/oauth/form/addition.phtml"/>
+        </reference>
+    </ruoauth_provider_addition>
+
+</layout>

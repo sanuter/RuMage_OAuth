@@ -1,67 +1,52 @@
 <?php
+###lit###
 
 class RuMage_OAuth_Model_Services_Facebook
     extends RuMage_OAuth_Model_Auth2
 {
-    /**
-     * Alias service.
-     */
-    const PROVIDER_NAME = 'facebook';
-
-    /**
-     * Link for get token.
-     */
     const AUTHORIZE_URL = 'https://www.facebook.com/dialog/oauth';
-
-    /**
-     * Link for get token.
-     */
     const ACCESS_TOKEN_URL = 'https://graph.facebook.com/oauth/access_token';
 
-    /**
-     * Addition info from service.
-     * @var string
-     */
-    protected $_scope = 'email';
+    const XML_PATH_CLIENT_ID = 'ruoauth/facebook/application_id';
+    const XML_PATH_CLIENT_SECRET = 'ruoauth/facebook/application_secret';
+    const XML_PATH_SCOPE = 'ruoauth/facebook/scope';
+    const XML_PATH_POPUP_WITDTH = 'ruoauth/facebook/popup_width';
+    const XML_PATH_POPUP_HEIGHT = 'ruoauth/facebook/popup_height';
 
+    protected $_client_id = '';
+    protected $_client_secret = '';
+    protected $_scope = 'email';
     protected $_providerOptions = array(
         'authorize' => self::AUTHORIZE_URL ,
         'access_token' => self::ACCESS_TOKEN_URL,
     );
 
-    /**
-     * Keys return attributes.
-     * @var array
-     */
-    protected $_attributesMapKeys = array(
-        'uid' => 'id',
-        'firstname' => 'first_name',
-        'lastname' => 'last_name',
-        'email' => 'email',
-    );
+    protected $_uid = NULL;
 
     public function _construct()
     {
-        $this->_client_id = Mage::helper('ruoauth')->getClientId($this);
-        $this->_client_secret = Mage::helper('ruoauth')->getClientSecret($this);
+        $this->_client_id = Mage::getStoreConfig(self::XML_PATH_CLIENT_ID);
+        $this->_client_secret = Mage::getStoreConfig(self::XML_PATH_CLIENT_SECRET);
+        //$this->_scope = Mage::getStoreConfig(self::XML_PATH_SCOPE);
+
+        $this->setData(array(
+                            'name' => 'facebook',
+                            'title' => 'Facebook.com',
+                            'type' => 'OAuth2',
+                            'width' => Mage::getStoreConfig(self::XML_PATH_POPUP_WITDTH),
+                            'height' => Mage::getStoreConfig(self::XML_PATH_POPUP_HEIGHT),
+                       ));
     }
 
-    /**
-     * Return alias service.
-     * @return string
-     */
-    public function getServiceName()
-    {
-        return self::PROVIDER_NAME;
-    }
-
-    /**
-     * Get attributes current user.
-     * @return bool|void
-     */
     protected function fetchAttributes()
     {
-        $answer = $this->makeSignedRequest('https://graph.facebook.com/me',
+        if ($this->getData('_fetchattributes')) {
+            return TRUE;
+        }
+
+        $this->restoreAccessToken();
+
+        $info = (object) $this->makeSignedRequest('https://graph.facebook.com/me',
             array(
                 'query' => array(
                     'scope' => $this->_scope
@@ -69,7 +54,16 @@ class RuMage_OAuth_Model_Services_Facebook
             )
         );
 
-        $this->_fetchAttributes((array) $answer);
+        $this->setData('uid', $info->id);
+        $this->setData('fullname', $info->name);
+        $full_name = explode(' ', $info->name);
+        $this->setData('firstname', $full_name[0]);
+        $this->setData('lastname', $full_name[1]);
+        $this->setData('email', $info->email);
+        $this->setData('link', $info->link);
+        $this->setData('_fetchattributes', TRUE);
+
+        unset($full_name, $info);
     }
 
     /**
@@ -85,20 +79,22 @@ class RuMage_OAuth_Model_Services_Facebook
             $redirect_uri = implode('?', $url);
         }
 
+        $this->setState('redirect_uri', $redirect_uri);
+
         $url = parent::getCodeUrl($redirect_uri);
+
+        if (isset($_GET['js'])) {
+            $url .= '&display=popup';
+        }
 
         return $url;
     }
 
     protected function getTokenUrl($code)
     {
-        return parent::getTokenUrl($code) . '&redirect_uri=' . urlencode(Mage::helper('ruoauth')->getReturnUrl());
+        return parent::getTokenUrl($code) . '&redirect_uri=' . urlencode($this->getState('redirect_uri'));
     }
 
-    /**
-     * Returns the OAuth2 access token.
-     * @param stdClass $token access token object.
-     */
     protected function getAccessToken($code)
     {
         $response = $this->makeRequest($this->getTokenUrl($code), array(), FALSE);
@@ -112,14 +108,8 @@ class RuMage_OAuth_Model_Services_Facebook
      */
     protected function saveAccessToken($token)
     {
-        if (!isset($token['access_token'])) {
-            Mage::helper('ruoauth')->getSession()->addError(
-                Mage::helper('ruoauth')->__('Invalide token')
-            );
-            $this->cancel();
-            return FALSE;
-        }
-
+        $this->setState('auth_token', $token['access_token']);
+        $this->setState('expires', isset($token['expires']) ? time() + (int)$token['expires'] - 60 : 0);
         $this->_access_token = $token['access_token'];
     }
 

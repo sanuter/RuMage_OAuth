@@ -1,92 +1,112 @@
 <?php
+###lit###
 
 class RuMage_OAuth_Model_Services_Vk
     extends RuMage_OAuth_Model_Auth2
 {
-    /**
-     * Alias service.
-     */
-    const PROVIDER_NAME = 'vk';
-
-    /**
-     * Authenticate link.
-     */
+    const USER_URL = 'http://vk.com/id';
     const AUTHORIZE_URL = 'https://api.vk.com/oauth/authorize';
-
-    /**
-     * Link for get token.
-     */
     const ACCESS_TOKEN_URL = 'https://api.vk.com/oauth/access_token';
 
+    const XML_PATH_CLIENT_ID = 'ruoauth/vk/application_id';
+    const XML_PATH_CLIENT_SECRET = 'ruoauth/vk/application_secret';
+    const XML_PATH_SCOPE = 'ruoauth/vk/scope';
+    const XML_PATH_POPUP_WITDTH = 'ruoauth/vk/popup_width';
+    const XML_PATH_POPUP_HEIGHT = 'ruoauth/vk/popup_height';
+
+    protected $_client_id = '';
+    protected $_client_secret = '';
+    protected $_scope = 'friends';
     protected $_providerOptions = array(
         'authorize' => self::AUTHORIZE_URL ,
         'access_token' => self::ACCESS_TOKEN_URL,
     );
 
-    /**
-     * Keys return attributes.
-     * @var array
-     */
-    protected $_attributesMapKeys = array(
-        'uid' => 'uid',
-        'firstname' => 'first_name',
-        'lastname' => 'last_name',
-    );
+    protected $_uid = NULL;
 
     public function _construct()
     {
-        $this->_client_id = Mage::helper('ruoauth')->getClientId($this);
-        $this->_client_secret = Mage::helper('ruoauth')->getClientSecret($this);
+        $this->_client_id = Mage::getStoreConfig(self::XML_PATH_CLIENT_ID);
+        $this->_client_secret = Mage::getStoreConfig(self::XML_PATH_CLIENT_SECRET);
+        $this->_scope = Mage::getStoreConfig(self::XML_PATH_SCOPE);
+
+        $this->setData(array(
+                            'name' => 'vk',
+                            'title' => 'VK.com',
+                            'type' => 'OAuth2',
+                            'width' => Mage::getStoreConfig(self::XML_PATH_POPUP_WITDTH),
+                            'height' => Mage::getStoreConfig(self::XML_PATH_POPUP_HEIGHT),
+                       ));
     }
 
-    /**
-     * Return alias service.
-     * @return string
-     */
-    public function getServiceName()
-    {
-        return self::PROVIDER_NAME;
-    }
-
-    /**
-     * Get attributes current user.
-     * @return bool|void
-     */
     protected function fetchAttributes()
     {
-        $answer = (array) $this->makeSignedRequest('https://api.vk.com/method/getProfiles', array(
+        if ($this->getData('_fetchattributes')) {
+            return TRUE;
+        }
+
+        $this->restoreAccessToken();
+
+        $info = (array)$this->makeSignedRequest('https://api.vk.com/method/getProfiles', array(
             'query' => array(
                 'uids' => $this->_uid,
+                'fields' => 'nickname, sex, bdate, city, country, timezone',
             ),
         ));
 
-        if (!isset($answer['response'][0])) {
-            Mage::helper('ruoauth')->getSession()->addError(
-                Mage::helper('ruoauth')->__('Invalide data')
-            );
-            $this->cancel();
-            return FALSE;
+        $info = $info['response'][0];
+
+        $this->setData('uid', $info->uid);
+        $this->setData('fullname', $info->first_name . ' ' . $info->last_name);
+        $this->setData('firstname', $info->first_name);
+        $this->setData('lastname', $info->last_name);
+        $this->setData('email', NULL);
+        $this->setData('link', self::USER_URL . $info->uid);
+        $this->setData('_fetchattributes', TRUE);
+    }
+
+       /**
+        * Returns the url to request to get OAuth2 code.
+        * @param string $redirect_uri url to redirect after user confirmation.
+        * @return string url to request.
+        */
+    protected function getCodeUrl($redirect_uri)
+    {
+        $url = parent::getCodeUrl($redirect_uri);
+
+        if (isset($_GET['js'])) {
+            $url .= '&display=popup';
         }
 
-        $this->_fetchAttributes((array) $answer['response'][0]);
+        return $url;
     }
 
     /**
-     * Save access token.
+     * Save access token to the session.
      * @param stdClass $token access token object.
      */
     protected function saveAccessToken($token)
     {
-        if (!isset($token->access_token)) {
-            Mage::helper('ruoauth')->getSession()->addError(
-                Mage::helper('ruoauth')->__('Invalide token')
-            );
-            $this->cancel();
-            return FALSE;
-        }
-
+        $this->setState('auth_token', $token->access_token);
+        $this->setState('uid', $token->user_id);
+        $this->setState('expires', time() + $token->expires_in - 60);
         $this->_uid = $token->user_id;
         $this->_access_token = $token->access_token;
+    }
+
+    /**
+     * Restore access token from the session.
+     * @return boolean whether the access token was successfuly restored.
+     */
+    protected function restoreAccessToken()
+    {
+        if ($this->hasState('uid') && parent::restoreAccessToken()) {
+            $this->_uid = $this->getState('uid');
+            return TRUE;
+        } else {
+            $this->_uid = NULL;
+            return FALSE;
+        }
     }
 
     /**
