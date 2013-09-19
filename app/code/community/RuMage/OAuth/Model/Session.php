@@ -10,7 +10,6 @@ class RuMage_OAuth_Model_Session extends Mage_Customer_Model_Session
      * @param   string $password
      * @return  bool
      */
-
     public function sociaLogin($provider)
     {
         /** @var $customer RuMage_OAuth_Model_Customer */

@@ -4,43 +4,58 @@
 class RuMage_OAuth_Model_Services_Mailru
     extends RuMage_OAuth_Model_Auth2
 {
+    /**
+     * Alias service.
+     */
+    const PROVIDER_NAME = 'mailru';
+
+    /**
+     * Authenticate link.
+     */
     const AUTHORIZE_URL = 'https://connect.mail.ru/oauth/authorize';
+
+    /**
+     * Link for get token.
+     */
     const ACCESS_TOKEN_URL = 'https://connect.mail.ru/oauth/token';
 
-    const XML_PATH_CLIENT_ID = 'ruoauth/mailru/application_id';
-    const XML_PATH_CLIENT_SECRET = 'ruoauth/mailru/application_secret';
-    const XML_PATH_SCOPE = 'ruoauth/mailru/scope';
-    const XML_PATH_POPUP_WITDTH = 'ruoauth/mailru/popup_width';
-    const XML_PATH_POPUP_HEIGHT = 'ruoauth/mailru/popup_height';
-
-    protected $_client_id = '';
-    protected $_client_secret = '';
-    protected $_scope = '';
     protected $_providerOptions = array(
         'authorize' => self::AUTHORIZE_URL,
         'access_token' => self::ACCESS_TOKEN_URL,
     );
 
-    protected $_uid = NULL;
-
     public function _construct()
     {
-        $this->_client_id = Mage::getStoreConfig(self::XML_PATH_CLIENT_ID);
-        $this->_client_secret = Mage::getStoreConfig(self::XML_PATH_CLIENT_SECRET);
-        $this->_scope = Mage::getStoreConfig(self::XML_PATH_SCOPE);
-
-        $this->setData(array(
-                            'name' => 'mailru',
-                            'title' => 'Mail.ru',
-                            'type' => 'OAuth2',
-                            'width' => Mage::getStoreConfig(self::XML_PATH_POPUP_WITDTH),
-                            'height' => Mage::getStoreConfig(self::XML_PATH_POPUP_HEIGHT),
-                       ));
+        $this->_client_id = Mage::helper('ruoauth')->getClientId($this);
+        $this->_client_secret = Mage::helper('ruoauth')->getClientSecret($this);
     }
 
+    /**
+     * Return alias service.
+     * @return string
+     */
+    public function getServiceName()
+    {
+        return self::PROVIDER_NAME;
+    }
+
+    /**
+     * Keys return attributes.
+     * @var array
+     */
+    protected $_attributesMapKeys = array(
+        'uid' => 'uid',
+        'firstname' => 'first_name',
+        'lastname' => 'last_name',
+    );
+
+    /**
+     * Get attributes current user.
+     * @return bool|void
+     */
     protected function fetchAttributes()
     {
-        $info = (array) $this->makeSignedRequest('http://www.appsmail.ru/platform/api',
+        $answer = (array) $this->makeSignedRequest('http://www.appsmail.ru/platform/api',
             array(
                 'query' => array(
                     'uids' => $this->_uid,
@@ -50,30 +65,27 @@ class RuMage_OAuth_Model_Services_Mailru
                 )
         );
 
-        $this->setData('uid', $info[0]->uid);
-        $this->setData('fullname', $info[0]->first_name . ' ' . $info[0]->last_name);
-        $this->setData('firstname', $info[0]->first_name);
-        $this->setData('lastname', $info[0]->last_name);
-        $this->setData('email', NULL);
-        $this->setData('link', $info[0]->link);
-    }
-
-    protected function getCodeUrl($redirect_uri)
-    {
-        $url = parent::getCodeUrl($redirect_uri);
-
-        if (isset($_GET['js'])) {
-            $url .= '&display=popup';
+        if (!isset($answer[0])) {
+            Mage::helper('ruoauth')->getSession()->addError(
+                Mage::helper('ruoauth')->__('Invalide data')
+            );
+            $this->cancel();
+            return FALSE;
         }
 
-        return $url;
+        $this->_fetchAttributes((array) $answer[0]);
     }
 
+    //TODO change
     protected function getTokenUrl($code)
     {
-        return $this->_providerOptions['access_token'];
+        return self::ACCESS_TOKEN_URL;
     }
 
+    /**
+     * Returns the OAuth2 access token.
+     * @param stdClass $token access token object.
+     */
     protected function getAccessToken($code)
     {
         $params = array(
@@ -81,39 +93,37 @@ class RuMage_OAuth_Model_Services_Mailru
             'client_secret' => $this->_client_secret,
             'grant_type' => 'authorization_code',
             'code' => $code,
-            'redirect_uri' => Mage::app()->getHelper('ruoauth')->getReturnUrl(),
+            'redirect_uri' => Mage::helper('ruoauth')->getReturnUrl(),
         );
         return $this->makeRequest($this->getTokenUrl($code), array('data' => $params));
     }
 
     /**
-     * Save access token to the session.
+     * Save access token.
      * @param stdClass $token access token object.
      */
     protected function saveAccessToken($token)
     {
-        $this->setState('auth_token', $token->access_token);
-        $this->setState('uid', $token->x_mailru_vid);
-        $this->setState('expires', time() + $token->expires_in - 60);
+        if (!isset($token->access_token)) {
+            Mage::helper('ruoauth')->getSession()->addError(
+                Mage::helper('ruoauth')->__('Invalide token')
+            );
+            $this->cancel();
+            return FALSE;
+        }
+
         $this->_uid = $token->x_mailru_vid;
         $this->_access_token = $token->access_token;
     }
 
     /**
-     * Restore access token from the session.
-     * @return boolean whether the access token was successfuly restored.
+     * Returns the protected resource.
+     * @param string $url url to request.
+     * @param array $options HTTP request options. Keys: query, data, referer.
+     * @param boolean $parseJson Whether to parse response in json format.
+     * @return string the response.
+     * @see makeRequest
      */
-    protected function restoreAccessToken()
-    {
-        if ($this->hasState('uid') && parent::restoreAccessToken()) {
-            $this->_uid = $this->getState('uid');
-            return TRUE;
-        } else {
-            $this->_uid = NULL;
-            return FALSE;
-        }
-    }
-
     public function makeSignedRequest($url, $options = array(), $parseJson = TRUE)
     {
         if (!$this->getIsAuthenticated()) {

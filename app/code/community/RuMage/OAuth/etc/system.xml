@@ -71,7 +71,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                             <comment>Application ID</comment>
-                            <validate>required-entry</validate>
+                            <validate>required-entry validate-number</validate>
                             <depends>
                                 <active>1</active>
                             </depends>
@@ -84,7 +84,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                             <comment>Application Secret word for API</comment>
-                            <validate>required-entry</validate>
+                            <validate>required-entry validate-alphanum</validate>
                             <depends>
                                 <active>1</active>
                             </depends>
@@ -168,7 +168,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                             <comment>Application ID</comment>
-                            <validate>required-entry</validate>
+                            <validate>required-entry validate-number</validate>
                             <depends>
                                 <active>1</active>
                             </depends>
@@ -181,7 +181,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                             <comment>Application Secret word for API</comment>
-                            <validate>required-entry</validate>
+                            <validate>required-entry validate-alphanum</validate>
                             <depends>
                                 <active>1</active>
                             </depends>
@@ -245,7 +245,7 @@
                             <show_in_store>1</show_in_store>
                             <comment>Use (Yes/No)</comment>
                         </active>
-                        <application_id translate="label comment" module="ruoauth">
+                        <!--application_id translate="label comment" module="ruoauth">
                             <label>Application ID</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>2</sort_order>
@@ -253,7 +253,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                             <comment>Application ID</comment>
-                            <validate>required-entry</validate>
+                            <validate>required-entry validate-alphanum</validate>
                             <depends>
                                 <active>1</active>
                             </depends>
@@ -266,11 +266,11 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                             <comment>Application Secret word for API</comment>
-                            <validate>required-entry</validate>
+                            <validate>required-entry validate-alphanum</validate>
                             <depends>
                                 <active>1</active>
                             </depends>
-                        </application_secret>
+                        </application_secret-->
                         <popup_width translate="label comment" module="ruoauth">
                             <label>Popup width</label>
                             <frontend_type>text</frontend_type>
@@ -338,7 +338,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                             <comment>Application ID</comment>
-                            <validate>required-entry</validate>
+                            <validate>required-entry validate-number</validate>
                             <depends>
                                 <active>1</active>
                             </depends>
@@ -351,7 +351,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                             <comment>Application Secret word for API</comment>
-                            <validate>required-entry</validate>
+                            <validate>required-entry validate-alphanum</validate>
                             <depends>
                                 <active>1</active>
                             </depends>
@@ -364,7 +364,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                             <comment>Application Public</comment>
-                            <validate>required-entry</validate>
+                            <validate>required-entry validate-alphanum</validate>
                             <depends>
                                 <active>1</active>
                             </depends>
@@ -448,7 +448,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                             <comment>Application ID</comment>
-                            <validate>required-entry</validate>
+                            <validate>required-entry validate-number</validate>
                             <depends>
                                 <active>1</active>
                             </depends>
@@ -461,7 +461,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                             <comment>Application Secret word for API</comment>
-                            <validate>required-entry</validate>
+                            <validate>required-entry validate-alphanum</validate>
                             <depends>
                                 <active>1</active>
                             </depends>
@@ -545,7 +545,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                             <comment>Application ID</comment>
-                            <validate>required-entry</validate>
+                            <validate>required-entry validate-number</validate>
                             <depends>
                                 <active>1</active>
                             </depends>
@@ -558,7 +558,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                             <comment>Application Secret word for API</comment>
-                            <validate>required-entry</validate>
+                            <validate>required-entry validate-alphanum</validate>
                             <depends>
                                 <active>1</active>
                             </depends>

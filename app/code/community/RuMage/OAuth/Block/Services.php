@@ -3,46 +3,48 @@
 
 class RuMage_OAuth_Block_Services extends Mage_Core_Block_Template
 {
+    /**
+     * Return all services.
+     *
+     * @return mixed
+     */
     public function getServices()
     {
-        return $this->_getService();
+        return Mage::helper('ruoauth')->getServices();
     }
 
     /**
-     * @return RuMage_OAuth_Model_Base
+     * Check login user.
+     *
+     * @return mixed
      */
-    public function getAuthenticate()
-    {
-        $_provider = Mage::app()->getHelper('ruoauth')->getProvider();
-
-        if (empty($_provider)) {
-             return FALSE;
-        }
-
-        return $_provider->getIsAuthenticated();
-    }
-
     public function isCustomerLogin()
     {
         return Mage::getSingleton('customer/session')->isLoggedIn();
     }
 
+    /**
+     * Return url current provider.
+     *
+     * @param string $service
+     * @return string
+     */
     public function getProviderUrl($service = '')
     {
         return Mage::getUrl('ruoauth/provider', array('service' => $service));
     }
 
+    /**
+     * Return options current provider.
+     *
+     * @param $type
+     * @return array
+     */
     public function getProviderJsOptions($type)
     {
-        $_provider = Mage::app()->getHelper('ruoauth')->getProvider($type);
         return array(
-            'width' => $_provider->getWidth(),
-            'heigth' => $_provider->getHeight(),
+            'width' => Mage::helper('ruoauth')->getWidth($type),
+            'height' => Mage::helper('ruoauth')->getHeight($type),
         );
-    }
-
-    protected function _getService()
-    {
-        return Mage::app()->getHelper('ruoauth')->getServices();
     }
 }

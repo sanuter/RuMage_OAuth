@@ -4,49 +4,65 @@
 class RuMage_OAuth_Model_Services_Odnoklassniki
     extends RuMage_OAuth_Model_Auth2
 {
-    const USER_URL = 'http://api.odnoklassniki.ru/fb.do';
+    /**
+     * Alias service.
+     */
+    const PROVIDER_NAME = 'odnoklassniki';
+
+    /**
+     * Authenticate link.
+     */
     const AUTHORIZE_URL = 'http://www.odnoklassniki.ru/oauth/authorize';
+
+    /**
+     * Link for get token.
+     */
     const ACCESS_TOKEN_URL = 'http://api.odnoklassniki.ru/oauth/token.do';
 
-    const XML_PATH_CLIENT_ID = 'ruoauth/odnoklassniki/application_id';
-    const XML_PATH_CLIENT_SECRET = 'ruoauth/odnoklassniki/application_secret';
-    const XML_PATH_CLIENT_PUBLIC = 'ruoauth/odnoklassniki/application_public';
-    const XML_PATH_POPUP_WITDTH = 'ruoauth/odnoklassniki/popup_width';
-    const XML_PATH_POPUP_HEIGHT = 'ruoauth/odnoklassniki/popup_height';
-
-    protected $_client_id = '';
-    protected $_client_secret = '';
+    /**
+     * OAuth2 client secret key.
+     * @var string
+     */
     protected $_client_public = '';
-    protected $_scope = '';
+
     protected $_providerOptions = array(
         'authorize' => self::AUTHORIZE_URL ,
         'access_token' => self::ACCESS_TOKEN_URL,
     );
 
+    /**
+     * Keys return attributes.
+     * @var array
+     */
+    protected $_attributesMapKeys = array(
+        'uid' => 'uid',
+        'firstname' => 'first_name',
+        'lastname' => 'last_name',
+    );
+
     public function _construct()
     {
-        $this->_client_id = Mage::getStoreConfig(self::XML_PATH_CLIENT_ID);
-        $this->_client_secret = Mage::getStoreConfig(self::XML_PATH_CLIENT_SECRET);
-        $this->_client_public = Mage::getStoreConfig(self::XML_PATH_CLIENT_PUBLIC);
-
-        $this->setData(array(
-                            'name' => 'odnoklassniki',
-                            'title' => 'Odnoklassniki.ru',
-                            'type' => 'OAuth2',
-                            'width' => Mage::getStoreConfig(self::XML_PATH_POPUP_WITDTH),
-                            'height' => Mage::getStoreConfig(self::XML_PATH_POPUP_HEIGHT),
-                       ));
+        $this->_client_id = Mage::helper('ruoauth')->getClientId($this);
+        $this->_client_secret = Mage::helper('ruoauth')->getClientSecret($this);
+        $this->_client_public = Mage::helper('ruoauth')->getClientPublic($this);
     }
 
+    /**
+     * Return alias service.
+     * @return string
+     */
+    public function getServiceName()
+    {
+        return self::PROVIDER_NAME;
+    }
+
+    /**
+     * Get attributes current user.
+     * @return bool|void
+     */
     protected function fetchAttributes()
     {
-        if ($this->getData('_fetchattributes')) {
-            return TRUE;
-        }
-
-        $this->restoreAccessToken();
-
-        $info = $this->makeRequest(self::USER_URL, array(
+        $answer = $this->makeRequest('http://api.odnoklassniki.ru/fb.do', array(
                                                         'query' => array(
                                                             'method' => 'users.getCurrentUser',
                                                             'sig' => $this->_sig(),
@@ -57,19 +73,19 @@ class RuMage_OAuth_Model_Services_Odnoklassniki
                                                         ),
         ));
 
-        $this->setData('uid', $info->uid);
-        $this->setData('fullname', $info->first_name . ' ' . $info->last_name);
-        $this->setData('firstname', $info->first_name);
-        $this->setData('lastname', $info->last_name);
-        $this->setData('email', NULL);
-        $this->setData('_fetchattributes', TRUE);
+        $this->_fetchAttributes((array) $answer);
     }
 
+    //TODO change
     protected function getTokenUrl($code)
     {
         return self::ACCESS_TOKEN_URL;
     }
 
+    /**
+     * Returns the OAuth2 access token.
+     * @param stdClass $token access token object.
+     */
     protected function getAccessToken($code)
     {
         $params = array(
@@ -77,27 +93,15 @@ class RuMage_OAuth_Model_Services_Odnoklassniki
             'client_secret' => $this->_client_secret,
             'grant_type' => 'authorization_code',
             'code' => $code,
-            'redirect_uri' => $this->getState('redirect_uri'),
+            'redirect_uri' => Mage::helper('ruoauth')->getReturnUrl(),
         );
         $url = $this->getTokenUrl($code) .
             '?client_id=' . $this->_client_id .
             '&client_secret=' . $this->_client_secret .
-            '&redirect_uri=' . urlencode($this->getState('redirect_uri')) .
+            '&redirect_uri=' . Mage::helper('ruoauth')->getReturnUrl() .
             '&code=' . $code . '&grant_type=authorization_code';
-        $result = $this->makeRequest($url, array('data' => $params));
-        return $result->access_token;
-    }
 
-    protected function getCodeUrl($redirect_uri)
-    {
-        $this->setState('redirect_uri', $redirect_uri);
-        $url = parent::getCodeUrl($redirect_uri);
-
-        if (isset($_GET['js'])) {
-            $url .= '&display=popup';
-        }
-
-        return $url;
+        return $this->makeRequest($url, array('data' => $params));
     }
 
     /**
@@ -109,7 +113,7 @@ class RuMage_OAuth_Model_Services_Odnoklassniki
     {
         if (isset($json->error)) {
             return array(
-                'code' => $json->error_code,
+                'code' => $json->error,
                 'message' => $json->error_description,
             );
         } else {

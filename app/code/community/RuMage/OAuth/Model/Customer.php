@@ -4,12 +4,16 @@
 class RuMage_OAuth_Model_Customer
     extends Mage_Customer_Model_Customer
 {
+    /**
+     * Validate data new customer.
+     * @return bool
+     */
     public function validate()
     {
         foreach ($this->_attributes() as $attribute => $pattern) {
             if ($this->hasData($attribute)) {
                 if (!Zend_Validate::is($this->getData($attribute), $pattern)) {
-                    return TRUE;
+                    return FALSE;
                 }
             }
         }
@@ -17,17 +21,27 @@ class RuMage_OAuth_Model_Customer
         return TRUE;
     }
 
+    /**
+     * Set data customer.
+     * @param RuMage_OAuth_Model_Base $provider
+     */
     public function prepareData( RuMage_OAuth_Model_Base $provider )
     {
-        $this->setData('service_uid', $provider->getId());
-        $this->setData('service_name', $provider->getServiceName());
+        //TODO change set data.
+        $this->setData('service_uid1', $provider->getId());
+        $this->setData('service_name1', $provider->getServiceName());
         $this->setData('firstname', $provider->getFirstname());
         $this->setData('lastname', $provider->getLastname());
         $this->setData('email', Mage::helper('ruoauth')->getServiceEmail($provider));
-        $this->setData('password', $provider->getId());
+        $this->setData('password', $this->generatePassword());
     }
 
-    public function isNewCustomer($provider)
+    /**
+     * Source customer by your email.
+     * @param RuMage_OAuth_Model_Base $provider
+     * @return bool
+     */
+    public function isNewCustomer(RuMage_OAuth_Model_Base $provider)
     {
         $this->setWebsiteId(Mage::app()->getStore()->getWebsiteId());
         $this->loadByEmail(Mage::helper('ruoauth')->getServiceEmail($provider));
@@ -36,7 +50,7 @@ class RuMage_OAuth_Model_Customer
             return FALSE;
         }
 
-        return TRUE;
+        return $this->_checkUidCustomer($provider);
     }
 
     /**
@@ -50,24 +64,55 @@ class RuMage_OAuth_Model_Customer
      */
     public function socialAuthenticate($provider)
     {
+        $this->setWebsiteId(Mage::app()->getStore()->getWebsiteId());
         $this->loadByEmail(Mage::helper('ruoauth')->getServiceEmail($provider));
 
         if (!$this->getId()) {
-            throw Mage::exception('RuMage_Oauth', Mage::helper('ruoauth')->__('Invalid authenticate.'));
+            if ($this->_checkUidCustomer($provider)) {
+                Mage::helper('ruoauth')->getSession()->addError(
+                    Mage::helper('ruoauth')->__('Invalid authenticate.')
+                );
+            }
         }
 
         return TRUE;
     }
 
+    /**
+     * Source customer by your social UID.
+     * @param RuMage_OAuth_Model_Base $provider
+     * @return bool
+     */
+    protected  function _checkUidCustomer(RuMage_OAuth_Model_Base  $provider)
+    {
+        $this->setWebsiteId(Mage::app()->getStore()->getWebsiteId());
+        $customer = $this->getCollection()
+            ->addAttributeToFilter('service_uid1', array('like' => $provider->getId()))
+            ->addAttributeToFilter('service_name1', array('like' => $provider->getServiceName()))
+            ->getFirstItem();
+
+        if ($customer->getId()) {
+            $this->load($customer->getId());
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+
+    /**
+     * Array attributes for validate.
+     * @return array
+     */
     protected function _attributes()
     {
         return array (
-            'social_type' => 'Alpha',
-            'social_uid' => 'Alnum',
+            'service_name1' => 'Alpha',
+            'service_name1' => 'NotEmpty',
+            'service_uid1' => 'NotEmpty',
             'first_name' => 'Alpha',
             'last_name' => 'Alpha',
-            //'email' =>  'EmailAddress',
-            //'password' => 'NotEmpty',
+            'email' =>  'NotEmpty',
+            'password' => 'NotEmpty',
         );
     }
 
