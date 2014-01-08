@@ -79,16 +79,6 @@ class RuMage_OAuth_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * Return application public key.
-     * @param RuMage_OAuth_Model_Base $type
-     * @return mixed
-     */
-    public function getClientPublic(RuMage_OAuth_Model_Base $type)
-    {
-        return Mage::getStoreConfig('ruoauth/' . $type->getServiceName() . '/application_public');
-    }
-
-    /**
      * Return width for popup.
      * @param $type
      * @return mixed

@@ -47,36 +47,7 @@ class RuMage_OAuth_Model_Service extends Varien_Object
             return $this->config;
         }
 
-        //Set Application Id
-        $this->setConfigParam('app_id', $this->getClientId());
-
-        //Set Application Secret
-        $this->setConfigParam('app_secret', $this->getClientSecret());
-
-        return $this->config;
-    }
-
-    /**
-     * Return application ID.
-     * @return mixed
-     */
-    public function getClientId()
-    {
-        return Mage::getStoreConfig('ruoauth/' . $this->getServiceName() . '/application_id');
-    }
-
-    /**
-     * Return application secret key.
-     * @return mixed
-     */
-    public function getClientSecret()
-    {
-        return Mage::getStoreConfig('ruoauth/' . $this->getServiceName() . '/application_secret');
-    }
-
-    protected function setConfigParam($key, $value)
-    {
-        return $this->config[$key] = $value;
+        return Mage::helper('ruoauth/service')->configProvider($this);
     }
 
     /**
