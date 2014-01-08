@@ -28,7 +28,7 @@ class RuMage_OAuth_Model_Service extends Varien_Object
                 Mage::helper('ruoauth')->__('Unknown service.')
             );
 
-            return NUll;
+            return NULL;
         }
 
         //Set Name current provider
