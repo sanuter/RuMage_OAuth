@@ -79,26 +79,6 @@ class RuMage_OAuth_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * Return application ID.
-     * @param RuMage_OAuth_Model_Base $type
-     * @return mixed
-     */
-    public function getClientId(RuMage_OAuth_Model_Base $type)
-    {
-        return Mage::getStoreConfig('ruoauth/' . $type->getServiceName() . '/application_id');
-    }
-
-    /**
-     * Return application secret key.
-     * @param RuMage_OAuth_Model_Base $type
-     * @return mixed
-     */
-    public function getClientSecret(RuMage_OAuth_Model_Base $type)
-    {
-        return Mage::getStoreConfig('ruoauth/' . $type->getServiceName() . '/application_secret');
-    }
-
-    /**
      * Return application public key.
      * @param RuMage_OAuth_Model_Base $type
      * @return mixed

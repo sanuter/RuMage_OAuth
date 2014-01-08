@@ -8,6 +8,8 @@
 
 class RuMage_OAuth_Model_Service extends Varien_Object
 {
+    protected $config = array();
+
     /**
      * Init lib provider.
      */
@@ -25,9 +27,56 @@ class RuMage_OAuth_Model_Service extends Varien_Object
             $this->_getSession()->addError(
                 Mage::helper('ruoauth')->__('Unknown service.')
             );
+
+            return NUll;
         }
 
-        return new Opauth(array());
+        //Set Name current provider
+        $this->setServiceName($provider);
+
+        return new Opauth($this->configProvider());
+    }
+
+    public function configProvider()
+    {
+        if (!$this->getServiceName()) {
+            $this->_getSession()->addError(
+                Mage::helper('ruoauth')->__('Unknown service.')
+            );
+
+            return $this->config;
+        }
+
+        //Set Application Id
+        $this->setConfigParam('app_id', $this->getClientId());
+
+        //Set Application Secret
+        $this->setConfigParam('app_secret', $this->getClientSecret());
+
+        return $this->config;
+    }
+
+    /**
+     * Return application ID.
+     * @return mixed
+     */
+    public function getClientId()
+    {
+        return Mage::getStoreConfig('ruoauth/' . $this->getServiceName() . '/application_id');
+    }
+
+    /**
+     * Return application secret key.
+     * @return mixed
+     */
+    public function getClientSecret()
+    {
+        return Mage::getStoreConfig('ruoauth/' . $this->getServiceName() . '/application_secret');
+    }
+
+    protected function setConfigParam($key, $value)
+    {
+        return $this->config[$key] = $value;
     }
 
     /**
