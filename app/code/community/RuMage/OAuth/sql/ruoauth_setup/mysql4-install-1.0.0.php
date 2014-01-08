@@ -21,7 +21,7 @@ ENGINE = InnoDB
 ");
 */
 
-$installer->addAttribute('customer', 'service_name1', array(
+$installer->addAttribute('customer', 'service_name', array(
     'type' => 'varchar',
     'input' => 'text',
     'label' => 'Social Type',
@@ -29,7 +29,7 @@ $installer->addAttribute('customer', 'service_name1', array(
     'required' => FALSE,
 ));
 
-$installer->addAttribute('customer', 'service_uid1', array(
+$installer->addAttribute('customer', 'service_uid', array(
     'type' => 'varchar',
     'input' => 'text',
     'label' => 'Social UID',
