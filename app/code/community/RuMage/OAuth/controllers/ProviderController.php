@@ -139,11 +139,11 @@ class RuMage_OAuth_ProviderController
     protected function _setService()
     {
         //Set service alias;
-        $this->_service = $this->getRequest()->getParam('service');
+        $this->_service = $this->getRequest()->getParam('service', '');
 
         //Set provider
         try {
-            $this->_provider = Mage::getSingleton('ruoauth/services_' . $this->_service);
+            $this->_provider = Mage::getSingleton('ruoauth/service')->getService($this->_service);
             return TRUE;
         } catch (Exception $e) {
             $this->_getSession()->addError(
