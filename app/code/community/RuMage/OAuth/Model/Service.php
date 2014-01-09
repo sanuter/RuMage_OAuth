@@ -99,6 +99,10 @@ class RuMage_OAuth_Model_Service extends Mage_Core_Model_Abstract
 
     public function getFirstname()
     {
+        if (!$this->hasData('first_name')) {
+            return $this->getData('name');
+        }
+
         return $this->getData('first_name');
     }
 
