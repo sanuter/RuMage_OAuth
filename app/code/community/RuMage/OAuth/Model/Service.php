@@ -32,7 +32,7 @@ class RuMage_OAuth_Model_Service extends Mage_Core_Model_Abstract
     public function getService($provider = '')
     {
         if (empty($provider)) {
-            $this->_getSession()->addError(
+            $this->getSession()->addError(
                 Mage::helper('ruoauth')->__('Unknown service.')
             );
 
@@ -90,11 +90,6 @@ class RuMage_OAuth_Model_Service extends Mage_Core_Model_Abstract
     public function setClientSecret()
     {
         $this->setConfigParam($this->getProvider()->getClientSecretKey(), $this->getClientSecretValue());
-    }
-
-    public function getId()
-    {
-        return $this->getUid();
     }
 
     public function getFirstname()
@@ -182,31 +177,32 @@ class RuMage_OAuth_Model_Service extends Mage_Core_Model_Abstract
      */
     protected function setCallbackUrl()
     {
-        $url = Mage::helper('ruoauth')->getCallbackUrl();
         $this->config['callback_url'] = Mage::helper('ruoauth')->getCallbackUrl();
     }
 
     /**
      * Init customer info for request.
      */
-    protected function initService()
+    public function initService()
     {
-        if (Mage::getSingleton('core/session')->hasData('opauth')) {
-            $response = Mage::getSingleton('core/session')->getOpauth();
+        if (isset($_SESSION['opauth']) && is_array($_SESSION['opauth'])) {
+            $response = $_SESSION['opauth'];
             if (array_key_exists('error', $response)) {
                 Mage::throwException(Mage::helper('ruoauth')->__('Authentication error: Opauth returns error auth response.'));
             } else {
                 if (empty($response['auth']) || empty($response['timestamp']) || empty($response['signature']) || empty($response['auth']['provider']) || empty($response['auth']['uid'])) {
                     Mage::throwException(Mage::helper('ruoauth')->__('Invalid auth response: Missing key auth response components.'));
-                } elseif (!$this->getService(strtolower($response['provider']))->validate(sha1(print_r($response['auth'], TRUE)), $response['timestamp'], $response['signature'], $reason)) {
+                } elseif (!$this->getService(strtolower($response['auth']['provider']))->validate(sha1(print_r($response['auth'], TRUE)), $response['timestamp'], $response['signature'], $reason)) {
                     Mage::throwException(Mage::helper('ruoauth')->__('Invalid auth response: %s.', $reason));
                 } else {
-                    $this->setData($response);
-                    $this->getProvider()->initInfo();
+                    $this->setId($response['auth']['uid']);
+                    $this->setData($response['auth']['info']);
                 }
             }
         } else {
             Mage::throwException(Mage::helper('ruoauth')->__('Authentication error: Opauth returns error auth response.'));
         }
+
+        return $this;
     }
 } 

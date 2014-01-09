@@ -14,13 +14,4 @@ class RuMage_OAuth_Model_Services_Facebook extends RuMage_OAuth_Model_Service
         $this->setClientIdKey('app_id');
         $this->setClientSecretKey('app_secret');
     }
-
-    protected function initService()
-    {
-        parent::initService();
-
-        if (!$this->hasData('email')) {
-
-        }
-    }
 }

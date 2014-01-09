@@ -46,7 +46,8 @@ class RuMage_OAuth_Helper_Data extends Mage_Core_Helper_Abstract
     public function getCallbackUrl()
     {
         $request = Mage::app()->getRequest();
-        return Mage::getUrl('ruoauth/provider/callback', array('service' => $request->getParam('service')));
+        $path = Mage::app()->getRequest()->getBasePath();
+        return $path . '/ruoauth/provider/callback/service/' . $request->getParam('service');
     }
 
     /**
@@ -55,8 +56,8 @@ class RuMage_OAuth_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getPathSite()
     {
-        $path = Mage::app()->getStore()->getDefaultBasePath();
-        return $path . 'ruoauth/provider/index/service';
+        $path = Mage::app()->getRequest()->getBasePath();
+        return $path . '/ruoauth/provider/index/service/';
     }
 
     /**
