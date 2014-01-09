@@ -40,7 +40,7 @@ class RuMage_OAuth_ProviderController
                     $customer = Mage::getModel('ruoauth/customer');
 
                     if ($customer->isNewCustomer($this->getService())) {
-                        $this->_createCustomer($customer);
+                        $this->createCustomer($customer);
                     }
 
                     $this->_getSession()->sociaLogin($this->getService());
@@ -119,11 +119,11 @@ class RuMage_OAuth_ProviderController
         }
     }
 
-    protected function _createCustomer(RuMage_OAuth_Model_Customer $customer)
+    protected function createCustomer(RuMage_OAuth_Model_Customer $customer)
     {
         try {
             /* prepare customer */
-            $customer->prepareData($this->getProvider());
+            $customer->prepareData($this->getService());
 
             if ($customer->validate()) {
                 $customer->save();
