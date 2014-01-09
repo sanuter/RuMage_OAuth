@@ -22,7 +22,12 @@ class RuMage_OAuth_ProviderController
     {
         if ($this->getRequest()->getParam('service', '')) {
             if ($this->getProvider()) {
-                $this->_authenticate();
+                try {
+                    $this->_authenticate();
+                } catch (Mage_Core_Exception $e) {
+                    $message = $e->getMessage();
+                    $this->_getSession()->addError($message);
+                }
             }
         }
 
