@@ -195,7 +195,7 @@ class RuMage_OAuth_Model_Service extends Mage_Core_Model_Abstract
                 } elseif (!$this->getService(strtolower($response['auth']['provider']))->validate(sha1(print_r($response['auth'], TRUE)), $response['timestamp'], $response['signature'], $reason)) {
                     Mage::throwException(Mage::helper('ruoauth')->__('Invalid auth response: %s.', $reason));
                 } else {
-                    $this->setId($response['auth']['uid']);
+                    $this->setData('id', $response['auth']['uid']);
                     $this->setData($response['auth']['info']);
                 }
             }

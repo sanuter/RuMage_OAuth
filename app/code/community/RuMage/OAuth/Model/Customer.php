@@ -88,6 +88,7 @@ class RuMage_OAuth_Model_Customer
         $customer = $this->getCollection()
             ->addAttributeToFilter('service_uid', array('like' => $provider->getId()))
             ->addAttributeToFilter('service_name', array('like' => $provider->getServiceName()))
+            ->setPageSize(1)
             ->getFirstItem();
 
         if ($customer->getId()) {
