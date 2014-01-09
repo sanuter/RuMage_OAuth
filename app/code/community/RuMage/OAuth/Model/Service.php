@@ -182,6 +182,7 @@ class RuMage_OAuth_Model_Service extends Mage_Core_Model_Abstract
      */
     protected function setCallbackUrl()
     {
+        $url = Mage::helper('ruoauth')->getCallbackUrl();
         $this->config['callback_url'] = Mage::helper('ruoauth')->getCallbackUrl();
     }
 

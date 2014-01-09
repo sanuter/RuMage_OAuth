@@ -174,7 +174,11 @@ class RuMage_OAuth_ProviderController
 
         //Set provider
         try {
-            return $this->_provider = Mage::getSingleton('ruoauth/service')->getService($this->_service);
+            if (!$this->_provider) {
+                $this->_provider = Mage::getSingleton('ruoauth/service')->getService($this->_service);
+            }
+
+            return $this->_provider;
         } catch (Exception $e) {
             $this->_getSession()->addError(
                 Mage::helper('ruoauth')->__('Unknown service.')

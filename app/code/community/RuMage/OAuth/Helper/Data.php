@@ -56,7 +56,7 @@ class RuMage_OAuth_Helper_Data extends Mage_Core_Helper_Abstract
     public function getPathSite()
     {
         $path = Mage::app()->getStore()->getDefaultBasePath();
-        return $path . 'ruoauth/provider/index/service/';
+        return $path . 'ruoauth/provider/index/service';
     }
 
     /**
