@@ -543,7 +543,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                             <comment>Application ID</comment>
-                            <validate>required-entry validate-number</validate>
+                            <validate>required-entry</validate>
                             <depends>
                                 <active>1</active>
                             </depends>
