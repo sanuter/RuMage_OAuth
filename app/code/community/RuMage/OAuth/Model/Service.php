@@ -8,19 +8,27 @@
 
 class RuMage_OAuth_Model_Service extends Varien_Object
 {
+    /**
+     * Enity config.
+     * @var array
+     */
     protected $config = array();
 
     /**
      * Init lib provider.
      */
-    public function __construct()
+    public function _construct()
     {
         require_once Mage::getBaseDir('lib') . DIRECTORY_SEPARATOR . 'Opauth' . DIRECTORY_SEPARATOR . 'Opauth.php';
         require_once Mage::getBaseDir('lib') . DIRECTORY_SEPARATOR . 'Opauth' . DIRECTORY_SEPARATOR . 'OpauthStrategy.php';
-
-        parent::__construct();
     }
 
+    /**
+     * Return provider for current service.
+     * @param string $provider
+     *
+     * @return null|Opauth
+     */
     public function getService($provider = '')
     {
         if (empty($provider)) {
@@ -31,23 +39,93 @@ class RuMage_OAuth_Model_Service extends Varien_Object
             return NULL;
         }
 
-        //Set Name current provider
-        $this->setServiceName($provider);
+        //Set current provider
+        $this->setProvider($provider);
 
         return new Opauth($this->configProvider());
     }
 
+    /**
+     * Return config for current provider.
+     * @return array
+     */
     public function configProvider()
     {
-        if (!$this->getServiceName()) {
-            $this->_getSession()->addError(
+        if (!$this->getProvider()->getServiceName()) {
+            $this->getSession()->addError(
                 Mage::helper('ruoauth')->__('Unknown service.')
             );
 
             return $this->config;
         }
 
-        return Mage::helper('ruoauth/service')->configProvider($this);
+        //Set Application Id
+        $this->setClientId();
+
+        //Set Application Secret
+        $this->setClientSecret();
+
+        return $this->config;
+    }
+
+    /**
+     * Return application ID.
+     * @return mixed
+     */
+    public function setClientId()
+    {
+        $this->setConfigParam($this->getProvider()->getClientIdKey(), $this->getClientIdValue());
+    }
+
+    /**
+     * Return application secret key.
+     * @return mixed
+     */
+    public function setClientSecret()
+    {
+        $this->setConfigParam($this->getProvider()->getClientSecretKey(), $this->getClientSecretValue());
+    }
+
+    /**
+     * Return application id value.
+     * @return mixed
+     */
+    protected function getClientIdValue()
+    {
+        return Mage::getStoreConfig('ruoauth/' . $this->getProvider()->getServiceName() . '/application_id');
+    }
+
+    /**
+     * Return application secret value.
+     * @return mixed
+     */
+    protected function getClientSecretValue()
+    {
+        return Mage::getStoreConfig('ruoauth/' . $this->getProvider()->getServiceName() . '/application_secret');
+    }
+
+    /**
+     * Set param in config.
+     * @param $key
+     * @param $value
+     *
+     * @return mixed
+     */
+    protected function setConfigParam($key, $value)
+    {
+        return $this->config[$key] = $value;
+    }
+
+    /**
+     * Set cuurent provider.
+     * @param $provider
+     *
+     * @return Varien_Object
+     */
+    protected function setProvider($provider)
+    {
+        $providerModel = Mage::getModel('ruoauth/services_' . $provider);
+        return $this->setData('provider', $providerModel);
     }
 
     /**
@@ -55,7 +133,7 @@ class RuMage_OAuth_Model_Service extends Varien_Object
      *
      * @return RuMage_OAuth_Model_Session
      */
-    protected function _getSession()
+    protected function getSession()
     {
         return Mage::getSingleton('ruoauth/session');
     }
