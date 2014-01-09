@@ -92,14 +92,19 @@ class RuMage_OAuth_Model_Service extends Mage_Core_Model_Abstract
         $this->setConfigParam($this->getProvider()->getClientSecretKey(), $this->getClientSecretValue());
     }
 
+    public function getId()
+    {
+        return $this->getUid();
+    }
+
     public function getFirstname()
     {
-        return $this->getFirstName();
+        return $this->getData('first_name');
     }
 
     public function getLastname()
     {
-        return $this->getLastName();
+        return $this->getData('last_name');
     }
 
     public function getEmail()
@@ -195,8 +200,9 @@ class RuMage_OAuth_Model_Service extends Mage_Core_Model_Abstract
                 } elseif (!$this->getService(strtolower($response['auth']['provider']))->validate(sha1(print_r($response['auth'], TRUE)), $response['timestamp'], $response['signature'], $reason)) {
                     Mage::throwException(Mage::helper('ruoauth')->__('Invalid auth response: %s.', $reason));
                 } else {
-                    $this->setData('id', $response['auth']['uid']);
                     $this->setData($response['auth']['info']);
+                    $this->setData('uid', $response['auth']['uid']);
+                    $this->setData('service_name', strtolower($response['auth']['provider']));
                 }
             }
         } else {

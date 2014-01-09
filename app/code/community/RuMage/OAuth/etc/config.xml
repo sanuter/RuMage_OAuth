@@ -28,16 +28,7 @@
         <models>
             <ruoauth>
                 <class>RuMage_OAuth_Model</class>
-                <resourceModel>ruoauth_mysql4</resourceModel>
             </ruoauth>
-            <ruoauth_mysql4>
-                <class>RuMage_OAuth_Model_Mysql4</class>
-                <entities>
-                    <service>
-                        <table>rumage_oauth_service</table>
-                    </service>
-                </entities>
-            </ruoauth_mysql4>
         </models>
     </global>
     <frontend>
