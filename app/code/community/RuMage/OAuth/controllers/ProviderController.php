@@ -68,6 +68,8 @@ class RuMage_OAuth_ProviderController
 
                     $this->_getSession()->addError($message);
                 }
+
+                $session->sociaLogin($this->getService());
             }
         }
 
