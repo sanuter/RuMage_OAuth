@@ -42,7 +42,7 @@
                         </subcribe>
                     </fields>
                 </setting>
-                <vk translate="label" module="ruoauth">
+                <vkontakte translate="label" module="ruoauth">
                     <label>Setting service VK.com</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>2</sort_order>
@@ -138,7 +138,7 @@
                             </depends>
                         </debug-->
                     </fields>
-                </vk>
+                </vkontakte>
                 <mailru translate="label" module="ruoauth">
                     <label>Setting service Mail.ru</label>
                     <frontend_type>text</frontend_type>
