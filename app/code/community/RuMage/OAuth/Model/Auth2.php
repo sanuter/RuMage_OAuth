@@ -2,7 +2,7 @@
 ###lit###
 
 abstract class RuMage_OAuth_Model_Auth2
-    extends RuMage_OAuth_Model_Base
+    extends RuMage_OAuth_Model_Base implements RuMage_OAuth_Interface
 {
     /**
      * @var string OAuth2 client id.
@@ -32,18 +32,6 @@ abstract class RuMage_OAuth_Model_Auth2
      */
     protected $_access_token = '';
 
-    /**
-     * @var string ID current social user.
-     */
-    protected $_uid = NULL;
-
-    /**
-     * Set type provider.
-     */
-    public function _construct()
-    {
-        $this->setType('OAuth2');
-    }
 
     /**
      * Authenticate the user.
@@ -54,20 +42,8 @@ abstract class RuMage_OAuth_Model_Auth2
         /* @var $request Mage_Core_Controller_Request_Http */
         $request = Mage::app()->getRequest();
 
-        //TODO fix this (Odnklassniki)
-        if ($request->getParam('service', 'odnoklassniki') && isset($_GET['error'])) {
-            Mage::helper('ruoauth')->getSession()->addError(
-                Mage::helper('ruoauth')->__($_GET['error'])
-            );
-            $this->cancel();
-            return FALSE;
-        }
-
         // user denied error
         if ($request->getParam('error', '') && $request->getParam('error', '') == 'access_denied') {
-                Mage::helper('ruoauth')->getSession()->addError(
-                    Mage::helper('ruoauth')->__($request->getParam('error'))
-                );
                 $this->cancel();
                 return FALSE;
         }
@@ -76,17 +52,21 @@ abstract class RuMage_OAuth_Model_Auth2
         if ($request->getParam('code', '')) {
             $code = $request->getParam('code');
             $token = $this->getAccessToken($code);
-            $this->saveAccessToken($token);
-            $this->setAuthenticated(TRUE);
-        } else {
+            if (isset($token)) {
+                $this->saveAccessToken($token);
+                $this->setAuthenticated(TRUE);
+            }
+        } else if (!$this->restoreAccessToken()) {
             // Use the URL of the current page as the callback URL.
             if ($request->getParam('redirect_uri', '')) {
                 $redirect_uri = $request->getParam('redirect_uri');
             } else {
-                $redirect_uri = Mage::helper('ruoauth')->getReturnUrl(); //getting return URL
+                $redirect_uri = Mage::app()->getHelper('ruoauth')->getReturnUrl(); //getting return URL
             }
 
-            Mage::app()->getResponse()->setRedirect($this->getCodeUrl($redirect_uri));
+            $url = $this->getCodeUrl($redirect_uri);
+
+            Mage::app()->getResponse()->setRedirect($url);
         }
 
         return $this->getIsAuthenticated();
@@ -99,14 +79,11 @@ abstract class RuMage_OAuth_Model_Auth2
      */
     protected function getCodeUrl($redirect_uri)
     {
-        $params = array(
-           'client_id' => $this->_client_id,
-           'redirect_uri' => $redirect_uri,
-           'scope' => $this->_scope,
-           'response_type' => 'code',
-        );
-
-        return $this->_providerOptions['authorize'] . '?' . http_build_query($params);
+        return $this->_providerOptions['authorize'] .
+            '?client_id=' . $this->_client_id .
+            '&redirect_uri=' . urlencode($redirect_uri) .
+            '&scope=' . $this->_scope .
+            '&response_type=code';
     }
 
     /**
@@ -115,13 +92,10 @@ abstract class RuMage_OAuth_Model_Auth2
      */
     protected function getTokenUrl($code)
     {
-        $params = array(
-            'client_id' => $this->_client_id,
-            'client_secret' => $this->_client_secret,
-            'code' => $code,
-        );
-
-        return $this->_providerOptions['access_token'] . '?' . http_build_query($params);
+        return $this->_providerOptions['access_token'] .
+            '?client_id=' . $this->_client_id .
+            '&client_secret=' . $this->_client_secret .
+            '&code=' . $code;
     }
 
     /**
@@ -135,20 +109,31 @@ abstract class RuMage_OAuth_Model_Auth2
     }
 
     /**
-     * Save access token.
+     * Save access token to the session.
      * @param string $token access token.
      */
     protected function saveAccessToken($token)
     {
-        if (!isset($token->access_token)) {
-            Mage::helper('ruoauth')->getSession()->addError(
-                Mage::helper('ruoauth')->__('Invalide token')
-            );
-            $this->cancel();
+        $this->setState('auth_token', $token);
+        $this->setState('expires', time() + 3600);
+        $this->_access_token = $token;
+    }
+
+    /**
+     * Restore access token from the session.
+     * @return boolean whether the access token was successfuly restored.
+     */
+    protected function restoreAccessToken()
+    {
+        if ($this->hasState('auth_token') && $this->getState('expires', 0) > time()) {
+            $this->_access_token = $this->getState('auth_token');
+            $this->setAuthenticated(TRUE);
+            return TRUE;
+        } else {
+            $this->_access_token = NULL;
+            $this->setAuthenticated(FALSE);
             return FALSE;
         }
-
-        $this->_access_token = $token->access_token;
     }
 
     /**
@@ -159,15 +144,18 @@ abstract class RuMage_OAuth_Model_Auth2
      * @return string the response.
      * @see makeRequest
      */
-    public function makeSignedRequest($url, $options = array())
+    public function makeSignedRequest($url, $options = array(), $parseJson = TRUE)
     {
         if (!$this->getIsAuthenticated()) {
-            Mage::helper('ruoauth')->getSession()
-                ->addError('Unable to complete the request because the user was not authenticated.');
+            throw new RuMage_OAuth_Exception(
+                401,
+                'Unable to complete the request because the user was not authenticated.'
+            );
         }
 
         $options['query']['access_token'] = $this->_access_token;
         $result = $this->makeRequest($url, $options);
         return $result;
+
     }
 }

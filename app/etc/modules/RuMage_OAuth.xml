@@ -10,6 +10,7 @@
             <depends>
                 <Mage_Customer />
                 <Mage_Adminhtml />
+                <RuMage_All />
             </depends>
         </RuMage_OAuth>
     </modules>

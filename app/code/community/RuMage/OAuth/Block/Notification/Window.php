@@ -3,15 +3,7 @@
 
 class RuMage_OAuth_Block_Notification_Window extends Mage_Adminhtml_Block_Notification_Window
 {
-    /**
-     * Path setting active.
-     */
-    const XML_CONFIG_RUOAUTH_ACTIVE = 'ruoauth/active';
-
-    /**
-     * Path setting subscribe.
-     */
-    const XML_CONFIG_RUOAUTH_SUBSCRIBE= 'ruoauth/subscribe';
+    const XML_CONFIG_RUOAUTH = 'ruoauth/subscribe';
 
     /**
      * Initialize block window
@@ -20,6 +12,14 @@ class RuMage_OAuth_Block_Notification_Window extends Mage_Adminhtml_Block_Notifi
     protected function _construct()
     {
         parent::_construct();
+
+        $this->setHeaderText($this->escapeHtml($this->__('Incoming Message')));
+        $this->setCloseText($this->escapeHtml($this->__('close')));
+        $this->setNoticeText($this->escapeHtml($this->__('NOTICE')));
+        $this->setMinorText($this->escapeHtml($this->__('MINOR')));
+        $this->setMajorText($this->escapeHtml($this->__('MAJOR')));
+        $this->setCriticalText($this->escapeHtml($this->__('CRITICAL')));
+
 
         $this->setNoticeMessageText($this->escapeHtml(Mage::helper('ruoauth')->__('Update RuMage OAuth')));
         $this->setNoticeMessageYes($this->escapeUrl(
@@ -30,6 +30,29 @@ class RuMage_OAuth_Block_Notification_Window extends Mage_Adminhtml_Block_Notifi
             Mage::helper("adminhtml")->getUrl("ruoauth_admin/adminhtml_answer/no/")
         ));
         $this->setReadNoText($this->escapeHtml(Mage::helper('ruoauth')->__('No')));
+
+        switch ($this->getLastNotice()->getSeverity()) {
+            case Mage_AdminNotification_Model_Inbox::SEVERITY_NOTICE:
+                $severity = 'SEVERITY_NOTICE';
+                break;
+
+            case Mage_AdminNotification_Model_Inbox::SEVERITY_MINOR:
+                $severity = 'SEVERITY_MINOR';
+                break;
+
+            case Mage_AdminNotification_Model_Inbox::SEVERITY_MAJOR:
+                $severity = 'SEVERITY_MAJOR';
+                break;
+
+            case Mage_AdminNotification_Model_Inbox::SEVERITY_CRITICAL:
+                $severity = 'SEVERITY_CRITICAL';
+                break;
+
+            default:
+                break;
+        }
+
+        $this->setNoticeSeverity($severity);
     }
 
     /**
@@ -39,7 +62,7 @@ class RuMage_OAuth_Block_Notification_Window extends Mage_Adminhtml_Block_Notifi
      */
     public function canShow()
     {
-        if (!Mage::getStoreConfig(self::XML_CONFIG_RUOAUTH_SUBSCRIBE) AND Mage::getStoreConfig(self::XML_CONFIG_RUOAUTH_ACTIVE)) {
+        if (!Mage::getStoreConfig(self::XML_CONFIG_RUOAUTH)) {
                 $this->_available = TRUE;
         }
 

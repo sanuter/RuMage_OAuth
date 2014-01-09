@@ -20,4 +20,13 @@
             <?php endforeach; ?>
         </ul>
     </div>
+
+    <?php if($this->getAuthenticate()): ?>
+    <script type="text/javascript">
+        if (window.location != window.parent.location)
+            window.parent.location.reload();
+        else
+            window.location = "<?php echo Mage::getUrl(); ?>";
+    </script>
+    <?php endif; ?>
 <?php endif; ?>

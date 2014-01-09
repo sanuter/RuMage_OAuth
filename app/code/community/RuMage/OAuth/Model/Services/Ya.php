@@ -4,16 +4,23 @@
 class RuMage_OAuth_Model_Services_Ya
         extends RuMage_OAuth_Model_OpenID
 {
-    /**
-     * Alias service.
-     */
-    const PROVIDER_NAME = 'ya';
+    const XML_PATH_POPUP_WITDTH = 'ruoauth/facebook/popup_width';
+    const XML_PATH_POPUP_HEIGHT = 'ruoauth/facebook/popup_height';
 
-    /**
-     * Authenticate link.
-     * @var string
-     */
     protected $_url = 'http://openid.yandex.ru/';
+
+    public function _construct()
+    {
+        parent::_construct();
+
+        $this->setData(array(
+                            'name' => 'ya',
+                            'title' => 'ya.ru',
+                            'type' => 'OpenID',
+                            'width' => Mage::getStoreConfig(self::XML_PATH_POPUP_WITDTH),
+                            'height' => Mage::getStoreConfig(self::XML_PATH_POPUP_HEIGHT),
+                       ));
+    }
 
     protected $_requiredAttributes = array(
         'name' => array('fullname', 'namePerson'),
@@ -21,33 +28,15 @@ class RuMage_OAuth_Model_Services_Ya
         'email' => array('email', 'contact/email'),
     );
 
-    /**
-     * Keys return attributes.
-     * @var array
-     */
-    protected $_attributesMapKeys = array(
-        'uid' => 'id',
-        'firstname' => 'name',
-        'lastname' => 'name',
-        'email' => 'email',
-    );
-
-    /**
-     * Return alias service.
-     * @return string
-     */
-    public function getServiceName()
-    {
-        return self::PROVIDER_NAME;
-    }
-
-    /**
-     * Get attributes current user.
-     * @return bool|void
-     */
     protected function fetchAttributes()
     {
-        $this->_fetchAttributes($this->getData());
+        //TODO change place
+        $this->setData('uid', $this->_genid());
+        $this->setData('fullname', $this->getName());
+        $this->setData('firstname', $this->getName());
+        $this->setData('lastname', $this->getName());
+        $this->setData('user_url', $this->getData('id'));
+        $this->setData('_fetchattributes', TRUE);
     }
 
     protected function _genid()

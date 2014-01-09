@@ -6,10 +6,11 @@
 
     <default>
         <reference name="head">
-            <action method="addCss" ifconfig="ruoauth/active"><stylesheet>css/rumage/oauth/oauth.css</stylesheet></action>
-            <action method="addJs" ifconfig="ruoauth/active"><script>rumage/jquery-1.7.2.min.js</script></action>
-            <action method="addJs" ifconfig="ruoauth/active"><script>rumage/oauth/init.js</script></action>
-            <action method="addJs" ifconfig="ruoauth/active"><script>rumage/oauth/oauth.js</script></action>
+            <!-- //TODO add ifconfig -->
+            <action method="addCss"><stylesheet>css/rumage/oauth/oauth.css</stylesheet></action>
+            <action method="addJs"><script>rumage/jquery-1.7.2.min.js</script></action>
+            <action method="addJs"><script>rumage/oauth/init.js</script></action>
+            <action method="addJs"><script>rumage/oauth/oauth.js</script></action>
         </reference>
 
         <reference name="top.menu">
@@ -17,12 +18,13 @@
         </reference>
     </default>
 
-    <ruoauth_provider_index>
-        <block type="page/html" name="root" output="toHtml" template="belvg/rumage/oauth/refresh.phtml"/>
-    </ruoauth_provider_index>
-
-    <ruoauth_provider_cancel>
-        <block type="page/html" name="root" output="toHtml" template="belvg/rumage/oauth/refresh.phtml"/>
-    </ruoauth_provider_cancel>
+    <ruoauth_provider_addition>
+        <reference name="root">
+            <action method="setTemplate"><template>page/1column.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <block type="ruoauth/addition" name="ruoauth.addition" template="belvg/rumage/oauth/form/addition.phtml"/>
+        </reference>
+    </ruoauth_provider_addition>
 
 </layout>
