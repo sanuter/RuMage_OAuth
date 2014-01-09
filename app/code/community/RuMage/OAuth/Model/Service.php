@@ -65,7 +65,11 @@ class RuMage_OAuth_Model_Service extends Mage_Core_Model_Abstract
         //Set Application Secret
         $this->setClientSecret();
 
-        $this->config['path'] = '/oauth/ruoauth/provider/index/service/';
+        //Set path
+        $this->setPath();
+
+        //Set callback
+        $this->setCallbackUrl();
 
         return $this->config;
     }
@@ -131,12 +135,28 @@ class RuMage_OAuth_Model_Service extends Mage_Core_Model_Abstract
     }
 
     /**
-     * Retrieve customer session model object
+     * Retrieve customer session model object.
      *
      * @return RuMage_OAuth_Model_Session
      */
     protected function getSession()
     {
         return Mage::getSingleton('ruoauth/session');
+    }
+
+    /**
+     * Set path.
+     */
+    protected function setPath()
+    {
+        $this->config['path'] = Mage::helper('ruoauth')->getPathSite();
+    }
+
+    /**
+     * Set callback url.
+     */
+    protected function setCallbackUrl()
+    {
+        $this->config['callback_url'] = Mage::helper('ruoauth')->getCallbackUrl();
     }
 } 

@@ -24,11 +24,11 @@ class RuMage_OAuth_Model_Customer
      * Set data customer.
      * @param RuMage_OAuth_Model_Base $provider
      */
-    public function prepareData( RuMage_OAuth_Model_Base $provider )
+    public function prepareData( RuMage_OAuth_Model_Service $provider )
     {
         //TODO change set data.
-        $this->setData('service_uid1', $provider->getId());
-        $this->setData('service_name1', $provider->getServiceName());
+        $this->setData('service_uid', $provider->getId());
+        $this->setData('service_name', $provider->getServiceName());
         $this->setData('firstname', $provider->getFirstname());
         $this->setData('lastname', $provider->getLastname());
         $this->setData('email', Mage::helper('ruoauth')->getServiceEmail($provider));
@@ -40,7 +40,7 @@ class RuMage_OAuth_Model_Customer
      * @param RuMage_OAuth_Model_Base $provider
      * @return bool
      */
-    public function isNewCustomer(RuMage_OAuth_Model_Base $provider)
+    public function isNewCustomer(RuMage_OAuth_Model_Service $provider)
     {
         $this->setWebsiteId(Mage::app()->getStore()->getWebsiteId());
         $this->loadByEmail(Mage::helper('ruoauth')->getServiceEmail($provider));
@@ -82,12 +82,12 @@ class RuMage_OAuth_Model_Customer
      * @param RuMage_OAuth_Model_Base $provider
      * @return bool
      */
-    protected  function _checkUidCustomer(RuMage_OAuth_Model_Base  $provider)
+    protected  function _checkUidCustomer(RuMage_OAuth_Model_Service  $provider)
     {
         $this->setWebsiteId(Mage::app()->getStore()->getWebsiteId());
         $customer = $this->getCollection()
-            ->addAttributeToFilter('service_uid1', array('like' => $provider->getId()))
-            ->addAttributeToFilter('service_name1', array('like' => $provider->getServiceName()))
+            ->addAttributeToFilter('service_uid', array('like' => $provider->getId()))
+            ->addAttributeToFilter('service_name', array('like' => $provider->getServiceName()))
             ->getFirstItem();
 
         if ($customer->getId()) {
@@ -105,9 +105,8 @@ class RuMage_OAuth_Model_Customer
     protected function _attributes()
     {
         return array (
-            'service_name1' => 'Alpha',
-            'service_name1' => 'NotEmpty',
-            'service_uid1' => 'NotEmpty',
+            'service_name' => 'NotEmpty',
+            'service_uid' => 'NotEmpty',
             'first_name' => 'Alpha',
             'last_name' => 'Alpha',
             'email' =>  'NotEmpty',

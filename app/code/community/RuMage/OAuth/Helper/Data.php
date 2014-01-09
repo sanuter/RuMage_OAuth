@@ -45,10 +45,20 @@ class RuMage_OAuth_Helper_Data extends Mage_Core_Helper_Abstract
      * Generate redirect link for current service.
      * @return string
      */
-    public function getReturnUrl()
+    public function getCallbackUrl()
     {
         $request = Mage::app()->getRequest();
-        return Mage::getUrl('ruoauth/provider', array('service' => $request->getParam('service')));
+        return Mage::getUrl('ruoauth/provider/callback', array('service' => $request->getParam('service')));
+    }
+
+    /**
+     * Generate path for OAuth request.
+     * @return string
+     */
+    public function getPathSite()
+    {
+        $path = Mage::app()->getStore()->getDefaultBasePath();
+        return $path . 'ruoauth/provider/index/service/';
     }
 
     /**

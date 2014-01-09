@@ -21,7 +21,7 @@ class RuMage_OAuth_ProviderController
     public function indexAction()
     {
         if ($this->getRequest()->getParam('service', '')) {
-            if ($this->_setService()) {
+            if ($this->getProvider()) {
                 $this->_authenticate();
             }
         }
@@ -32,7 +32,44 @@ class RuMage_OAuth_ProviderController
 
     public function callbackAction()
     {
+        if ($this->getRequest()->getParam('service', '')) {
+            if ($this->getProvider()) {
+                //TODO login and confirmation
+                try {
+                    /* @var $customer RuMage_OAuth_Model_Customer */
+                    $customer = Mage::getModel('ruoauth/customer');
 
+                    if ($customer->isNewCustomer($this->getProvider())) {
+                        $this->_createCustomer($customer);
+                    }
+
+                    $this->_getSession()->sociaLogin($this->getProvider());
+                    if ($this->_getSession()->getCustomer()->getIsJustConfirmed()) {
+                        if (Mage::helper('ruoauth')->checkEmail($customer)) {
+                            $this->_getSession()->addError(
+                                Mage::helper('ruoauth')->__('Input valid email')
+                            );
+                        }
+                    }
+                } catch (Mage_Core_Exception $e) {
+                    switch ($e->getCode()) {
+                        case Mage_Customer_Model_Customer::EXCEPTION_EMAIL_NOT_CONFIRMED:
+                            $value = Mage::helper('customer')->getEmailConfirmationUrl($this->getProvider()->getEmail());
+                            $message = Mage::helper('customer')->__('This account is not confirmed. <a href="%s">Click here</a> to resend confirmation email.', $value);
+                            break;
+
+                        default:
+                            $message = $e->getMessage();
+                            break;
+                    }
+
+                    $this->_getSession()->addError($message);
+                }
+            }
+        }
+
+        $this->loadLayout('ruoauth_provider_index');
+        $this->renderLayout();
     }
 
     /**
@@ -62,47 +99,31 @@ class RuMage_OAuth_ProviderController
     {
         if ($this->_getSession()->isLoggedIn()) {
             $this->_redirect('*/*/');
+
             return;
         }
-            //TODO login and confirmation
-            try {
-                $this->_provider->run();
-                /* @var $customer RuMage_OAuth_Model_Customer */
-                $customer = Mage::getModel('ruoauth/customer');
 
-                if ($customer->isNewCustomer($this->_provider)) {
-                    $this->_createCustomer($customer);
-                }
+        try {
+            Mage::dispatchEvent('oauth_request_prepare',
+                array('account_controller' => $this, 'provider' => $this->getProvider())
+            );
 
-                $this->_getSession()->sociaLogin($this->_provider);
-                if ($this->_getSession()->getCustomer()->getIsJustConfirmed()) {
-                    if (Mage::helper('ruoauth')->checkEmail($customer)) {
-                        $this->_getSession()->addError(
-                            Mage::helper('ruoauth')->__('Input valid email')
-                        );
-                    }
-                }
-            } catch (Mage_Core_Exception $e) {
-                switch ($e->getCode()) {
-                    case Mage_Customer_Model_Customer::EXCEPTION_EMAIL_NOT_CONFIRMED:
-                        $value = Mage::helper('customer')->getEmailConfirmationUrl($this->_provider->getEmail());
-                        $message = Mage::helper('customer')->__('This account is not confirmed. <a href="%s">Click here</a> to resend confirmation email.', $value);
-                        break;
+            $this->getProvider()->run();
 
-                    default:
-                        $message = $e->getMessage();
-                        break;
-                }
-
-                $this->_getSession()->addError($message);
-            }
+            Mage::dispatchEvent('oauth_request_success',
+                array('account_controller' => $this, 'provider' => $this->getProvider())
+            );
+        } catch (Mage_Core_Exception $e) {
+            $message = $e->getMessage();
+            $this->_getSession()->addError($message);
+        }
     }
 
     protected function _createCustomer(RuMage_OAuth_Model_Customer $customer)
     {
         try {
             /* prepare customer */
-            $customer->prepareData($this->_provider);
+            $customer->prepareData($this->getProvider());
 
             if ($customer->validate()) {
                 $customer->save();
@@ -139,10 +160,12 @@ class RuMage_OAuth_ProviderController
      * Set current provider.
      * @return bool
      */
-    protected function _setService()
+    protected function getProvider()
     {
-        //Set service alias;
-        $this->_service = $this->getRequest()->getParam('service', '');
+        if (!$this->_service) {
+            //Set service alias;
+            $this->_service = $this->getRequest()->getParam('service', '');
+        }
 
         //Set provider
         try {
