@@ -34,6 +34,9 @@ class RuMage_OAuth_ProviderController
     {
         if ($this->getRequest()->getParam('service', '')) {
             if ($this->getProvider()) {
+                /* $session RuMage_OAuth_Model_Session */
+                $session = $this->_getSession();
+
                 //TODO login and confirmation
                 try {
                     /* @var $customer RuMage_OAuth_Model_Customer */
