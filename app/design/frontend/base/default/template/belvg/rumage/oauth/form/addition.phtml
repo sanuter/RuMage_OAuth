@@ -1,0 +1,54 @@
+<?php
+###lit###
+
+/* @var $this RuMage_OAuth_Block_AdditionInfo */
+$provider = $this->getCurrentProvider();
+?>
+
+<div>
+    <?php echo $this->getMessagesBlock()->toHtml() ?>
+    <form action="<?php echo $this->getPostActionUrl() ?>" method="post" id="addtion-form">
+        <div class="col1-set">
+            <div class="col-1 registered-users">
+                <div class="content" style="margin: 0 auto; padding-bottom: 13px;">
+                    <ul class="form-list">
+                        <li>
+                            <label for="first_name"><?php echo $this->__('First Name') ?></label>
+                            <div class="input-box">
+                                <input type="text" name="addition[first_name]" value="<?php echo $this->escapeHtml($this->getFirstName()) ?>" id="first_name" class="input-text required-entry validate-alphanum" title="<?php echo $this->__('First Name') ?>" />
+                            </div>
+                        </li>
+                        <li>
+                            <label for="last_name"><?php echo $this->__('Last Name') ?></label>
+                            <div class="input-box">
+                                <input type="text" name="addition[last_name]" value="<?php echo $this->escapeHtml($this->getLastName()) ?>" id="last_name" class="input-text required-entry validate-alphanum" title="<?php echo $this->__('Last Name') ?>" />
+                            </div>
+                        </li>
+                        <li>
+                            <label for="email"><?php echo $this->__('Email Address') ?></label>
+                            <div class="input-box">
+                                <input type="text" name="addition[email]" value="<?php echo $this->escapeHtml($this->getEmail()) ?>" id="email" class="input-text required-entry validate-email" title="<?php echo $this->__('Email Address') ?>" />
+                            </div>
+                        </li>
+                        <li>
+                            <label for="password"><?php echo $this->__('Password') ?></label>
+                            <div class="input-box">
+                                <input type="password" name="addition[password]" class="input-text required-entry validate-password" id="password" title="<?php echo $this->__('Password') ?>" />
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="buttons-set" style="margin-top: 20px; padding: 0;">
+                        <button type="submit" class="button" title="<?php echo $this->__('Save') ?>" name="send" id="send"><?php echo $this->__('Save') ?></button>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="addition[service_type]" value="<?php echo $this->getServiceType() ?>"/>
+            <input type="hidden" name="addition[service_name]" value="<?php echo $this->getServiceName() ?>"/>
+            <input type="hidden" name="addition[service_uid]" value="<?php echo $this->getServiceUid() ?>"/>
+    </form>
+    <script type="text/javascript">
+        //<![CDATA[
+        var dataForm = new VarienForm('addtion-form', true);
+        //]]>
+    </script>
+</div>
