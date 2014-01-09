@@ -6,11 +6,11 @@
  */
 
 
-class RuMage_OAuth_Model_Services_Google extends RuMage_OAuth_Model_Service
+class RuMage_OAuth_Model_Services_Instagram extends RuMage_OAuth_Model_Service
 {
     public function _construct()
     {
-        $this->setServiceName('google');
+        $this->setServiceName('instagram');
         $this->setClientIdKey('client_id');
         $this->setClientSecretKey('client_secret');
     }
