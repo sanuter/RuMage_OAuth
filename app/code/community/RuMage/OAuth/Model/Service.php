@@ -6,7 +6,7 @@
  */
 
 
-class RuMage_OAuth_Model_Service extends Varien_Object
+class RuMage_OAuth_Model_Service extends Mage_Core_Model_Abstract
 {
     /**
      * Enity config.
@@ -42,7 +42,7 @@ class RuMage_OAuth_Model_Service extends Varien_Object
         //Set current provider
         $this->setProvider($provider);
 
-        return new Opauth($this->configProvider());
+        return new Opauth($this->configProvider(), FALSE);
     }
 
     /**
@@ -64,6 +64,8 @@ class RuMage_OAuth_Model_Service extends Varien_Object
 
         //Set Application Secret
         $this->setClientSecret();
+
+        $this->config['path'] = '/oauth/ruoauth/provider/index/service/';
 
         return $this->config;
     }
@@ -113,7 +115,7 @@ class RuMage_OAuth_Model_Service extends Varien_Object
      */
     protected function setConfigParam($key, $value)
     {
-        return $this->config[$key] = $value;
+        return $this->config['Strategy'][$this->getProvider()->getServiceName()][$key] = $value;
     }
 
     /**

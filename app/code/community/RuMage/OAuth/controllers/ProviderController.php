@@ -30,6 +30,11 @@ class RuMage_OAuth_ProviderController
         $this->renderLayout();
     }
 
+    public function callbackAction()
+    {
+
+    }
+
     /**
      * Close action.
      */
@@ -59,17 +64,16 @@ class RuMage_OAuth_ProviderController
             $this->_redirect('*/*/');
             return;
         }
-
-        if ($this->_provider->authenticate()) {
-            /* @var $customer RuMage_OAuth_Model_Customer */
-            $customer = Mage::getModel('ruoauth/customer');
-
-            if ($customer->isNewCustomer($this->_provider)) {
-                $this->_createCustomer($customer);
-            }
-
             //TODO login and confirmation
             try {
+                $this->_provider->run();
+                /* @var $customer RuMage_OAuth_Model_Customer */
+                $customer = Mage::getModel('ruoauth/customer');
+
+                if ($customer->isNewCustomer($this->_provider)) {
+                    $this->_createCustomer($customer);
+                }
+
                 $this->_getSession()->sociaLogin($this->_provider);
                 if ($this->_getSession()->getCustomer()->getIsJustConfirmed()) {
                     if (Mage::helper('ruoauth')->checkEmail($customer)) {
@@ -92,7 +96,6 @@ class RuMage_OAuth_ProviderController
 
                 $this->_getSession()->addError($message);
             }
-        }
     }
 
     protected function _createCustomer(RuMage_OAuth_Model_Customer $customer)
