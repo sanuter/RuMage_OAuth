@@ -31,10 +31,6 @@ class RuMage_OAuth_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getServiceEmail($provider)
     {
-        if ($provider->getEmail()) {
-            return $provider->getEmail();
-        }
-
         //TODO need this
         return $provider->getId() . '@' . strtolower($provider->getServiceName());
     }
