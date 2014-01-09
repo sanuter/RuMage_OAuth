@@ -31,8 +31,6 @@ class RuMage_OAuth_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getServiceEmail($provider)
     {
-        $provider->getAttributes();
-
         if ($provider->getEmail()) {
             return $provider->getEmail();
         }

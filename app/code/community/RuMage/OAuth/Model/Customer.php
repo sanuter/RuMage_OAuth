@@ -31,7 +31,7 @@ class RuMage_OAuth_Model_Customer
         $this->setData('service_name', $provider->getServiceName());
         $this->setData('firstname', $provider->getFirstname());
         $this->setData('lastname', $provider->getLastname());
-        $this->setData('email', Mage::helper('ruoauth')->getServiceEmail($provider));
+        $this->setData('email', $provider->getEmail());
         $this->setData('password', $this->generatePassword());
     }
 
@@ -43,7 +43,7 @@ class RuMage_OAuth_Model_Customer
     public function isNewCustomer(RuMage_OAuth_Model_Service $provider)
     {
         $this->setWebsiteId(Mage::app()->getStore()->getWebsiteId());
-        $this->loadByEmail(Mage::helper('ruoauth')->getServiceEmail($provider));
+        $this->loadByEmail($provider->getEmail());
 
         if ($this->getId()) {
             return FALSE;
@@ -64,7 +64,7 @@ class RuMage_OAuth_Model_Customer
     public function socialAuthenticate($provider)
     {
         $this->setWebsiteId(Mage::app()->getStore()->getWebsiteId());
-        $this->loadByEmail(Mage::helper('ruoauth')->getServiceEmail($provider));
+        $this->loadByEmail($provider->getEmail());
 
         if (!$this->getId()) {
             if ($this->_checkUidCustomer($provider)) {

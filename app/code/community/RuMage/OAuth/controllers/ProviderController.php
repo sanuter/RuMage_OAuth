@@ -39,11 +39,11 @@ class RuMage_OAuth_ProviderController
                     /* @var $customer RuMage_OAuth_Model_Customer */
                     $customer = Mage::getModel('ruoauth/customer');
 
-                    if ($customer->isNewCustomer($this->getProvider())) {
+                    if ($customer->isNewCustomer($this->getService())) {
                         $this->_createCustomer($customer);
                     }
 
-                    $this->_getSession()->sociaLogin($this->getProvider());
+                    $this->_getSession()->sociaLogin($this->getService());
                     if ($this->_getSession()->getCustomer()->getIsJustConfirmed()) {
                         if (Mage::helper('ruoauth')->checkEmail($customer)) {
                             $this->_getSession()->addError(
@@ -54,7 +54,7 @@ class RuMage_OAuth_ProviderController
                 } catch (Mage_Core_Exception $e) {
                     switch ($e->getCode()) {
                         case Mage_Customer_Model_Customer::EXCEPTION_EMAIL_NOT_CONFIRMED:
-                            $value = Mage::helper('customer')->getEmailConfirmationUrl($this->getProvider()->getEmail());
+                            $value = Mage::helper('customer')->getEmailConfirmationUrl($this->getService()->getEmail());
                             $message = Mage::helper('customer')->__('This account is not confirmed. <a href="%s">Click here</a> to resend confirmation email.', $value);
                             break;
 
@@ -177,6 +177,24 @@ class RuMage_OAuth_ProviderController
             );
             $this->_redirect('*/*/cancel');
             return FALSE;
+        }
+    }
+
+    /**
+     * Set current service.
+     * @return null
+     */
+    protected function getService()
+    {
+        //Set service
+        try {
+            return Mage::getSingleton('ruoauth/services_' . $this->_service)->initService();
+        } catch (Exception $e) {
+            $this->_getSession()->addError(
+                $e->getMessage()
+            );
+            $this->_redirect('*/*/cancel');
+            return NULL;
         }
     }
 }
