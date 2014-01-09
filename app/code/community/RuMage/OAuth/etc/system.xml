@@ -224,7 +224,7 @@
                         </debug-->
                     </fields>
                 </mailru>
-                <ya translate="label" module="ruoauth">
+                <yandex translate="label" module="ruoauth">
                     <label>Setting service YA.ru</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>4</sort_order>
@@ -308,7 +308,7 @@
                             </depends>
                         </debug-->
                     </fields>
-                </ya>
+                </yandex>
                 <odnoklassniki translate="label" module="ruoauth">
                     <label>Setting service Odnoklassniki.ru</label>
                     <frontend_type>text</frontend_type>
@@ -613,6 +613,103 @@
                         </debug-->
                     </fields>
                 </google>
+                <twitter translate="label" module="ruoauth">
+                    <label>Setting service Twitter</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>7</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <active translate="label comment" module="ruoauth">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>ruoauth/twitter/active</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Use (Yes/No)</comment>
+                        </active>
+                        <application_id translate="label comment" module="ruoauth">
+                            <label>Application ID</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Application ID</comment>
+                            <validate>required-entry</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </application_id>
+                        <application_secret translate="label comment" module="ruoauth">
+                            <label>Application Secret</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Application Secret word for API</comment>
+                            <validate>required-entry validate-alphanum</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </application_secret>
+                        <!--scope translate="label comment" module="ruoauth">
+                            <label>Scope</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Get info from REST API Google.com</comment>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </scope-->
+                        <popup_width translate="label comment" module="ruoauth">
+                            <label>Popup width</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-number validate-zero-or-greater required-entry</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </popup_width>
+                        <popup_height translate="label comment" module="ruoauth">
+                            <label>Popup height</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>6</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-number validate-zero-or-greater required-entry</validate>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </popup_height>
+                        <!--debug translate="label comment" module="ruoauth">
+                            <label>Debug</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>ruoauth/google/debug</config_path>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>7</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Debug service (Yes/No)</comment>
+                            <depends>
+                                <active>1</active>
+                            </depends>
+                        </debug-->
+                    </fields>
+                </twitter>
             </groups>
         </ruoauth>
     </sections>
