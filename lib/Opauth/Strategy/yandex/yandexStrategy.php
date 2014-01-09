@@ -6,7 +6,7 @@
  */
 class YandexStrategy extends OpauthStrategy{
 
-    public $openid_url = '';
+    public $openid_url = 'http://openid.yandex.ru/';
 
 	/**
 	 * Compulsory config keys, listed as unassociative arrays
@@ -55,11 +55,8 @@ class YandexStrategy extends OpauthStrategy{
 	 */
 	public function request(){
 		if (!$this->openid->mode){
-			if (empty($_POST['openid_url'])){
-				$this->render($this->strategy['identifier_form']);
-			}
-			else{
-				$this->openid->identity = $_POST['openid_url'];
+				$this->openid->identity = $this->openid_url;
+
 				try{
 					$this->redirect($this->openid->authUrl());
 				} catch (Exception $e){
@@ -71,7 +68,7 @@ class YandexStrategy extends OpauthStrategy{
 
 					$this->errorCallback($error);
 				}
-			}
+
 		}
 		elseif ($this->openid->mode == 'cancel'){
 			$error = array(
